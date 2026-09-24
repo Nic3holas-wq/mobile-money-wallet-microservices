@@ -51,11 +51,15 @@ public class CustomerExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ProblemDetail handleConflict(DataIntegrityViolationException exception) {
         for (Throwable cause = exception; cause != null; cause = cause.getCause()) {
+            if (cause instanceof ConstraintViolationException contactViolation
+                    && "uk_customer_contact_type_value".equals(contactViolation.getConstraintName())) {
+                return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Contact is already in use");
+            }
             if (cause instanceof ConstraintViolationException violation
                     && "uk_customer_keycloak_user_id".equals(violation.getConstraintName())) {
                 return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Customer already registered");
             }
         }
-        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to register customer");
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to save customer details");
     }
 }

@@ -16,7 +16,9 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/customers", "/api/v1/customers/me").authenticated()
+                        .requestMatchers("/api/v1/customers", "/api/v1/customers/me",
+                                "/api/v1/customers/me/addresses", "/api/v1/customers/me/addresses/*",
+                                "/api/v1/customers/me/contacts", "/api/v1/customers/me/contacts/*").authenticated()
                         .anyRequest().denyAll())
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(errors).accessDeniedHandler(errors))

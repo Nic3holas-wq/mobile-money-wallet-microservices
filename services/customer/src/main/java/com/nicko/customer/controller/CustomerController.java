@@ -5,14 +5,12 @@ import com.nicko.customer.service.CustomerService;
 import com.nicko.customer.dto.RegisterCustomerRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import java.net.URI;
-import java.util.UUID;
+import static com.nicko.customer.config.AuthenticatedCustomer.userId;
 
 @RestController
 @RequestMapping("/api/v1/customers")
@@ -32,16 +30,4 @@ public class CustomerController {
         return service.getCurrent(userId(jwt));
     }
 
-    private UUID userId(Jwt jwt) {
-        String subject = jwt.getSubject();
-        try {
-            UUID id = UUID.fromString(subject);
-            if (!id.toString().equalsIgnoreCase(subject)) {
-                throw new IllegalArgumentException();
-            }
-            return id;
-        } catch (IllegalArgumentException | NullPointerException exception) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token subject must be a Keycloak user UUID");
-        }
-    }
 }
