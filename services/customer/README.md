@@ -78,3 +78,27 @@ tokens receive `401` with a `WWW-Authenticate: Bearer` challenge; forbidden
 resources receive `403`. Internal exception details are not returned to clients.
 Signed-token tests use a temporary local JWKS server and verify audience, issuer,
 expiry, and signature rejection without contacting Keycloak.
+
+## Logging
+
+`LoggingAspect` uses Lombok `@Slf4j` (SLF4J) and Spring AOP:
+
+- Public controller methods: INFO completion with operation, status and duration.
+- Public service methods: DEBUG start/completion/failure and duration, including
+  transaction completion. Enable with `CUSTOMER_LOG_LEVEL=DEBUG`.
+- Controller exceptions: WARN for explicit 4xx responses, ERROR otherwise;
+  original exceptions are rethrown for the error handler to translate.
+- Security handler calls: WARN for authentication rejection (401) and access
+  denial (403), including requests that never reach a controller.
+
+Example:
+
+```text
+operation=CustomerController.getCurrent(..) event=completed status=200 durationMs=12
+```
+
+The aspect does not log method arguments, response bodies, headers, customer IDs,
+JWTs, exception messages or stack traces. Framework logging is configured
+separately. AOP logs proxied method calls, not a complete HTTP access log: request
+binding/validation failures before controller invocation have no controller
+execution log. Calls within the same bean bypass Spring's proxy.

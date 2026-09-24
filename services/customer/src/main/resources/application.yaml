@@ -93,7 +93,8 @@ management:
 logging:
   level:
     root: INFO
-    com.verapay.customer: DEBUG
+    com.nicko.customer: INFO
+    com.nicko.customer.logging: ${CUSTOMER_LOG_LEVEL:INFO}
     org.springframework.security: INFO
     org.hibernate.SQL: INFO
 

@@ -26,6 +26,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 class CustomerApiTests {
     @Autowired MockMvc mvc;
+    @Autowired com.nicko.customer.controller.CustomerController controller;
+    @Autowired com.nicko.customer.service.CustomerService service;
+    @Autowired com.nicko.customer.config.SecurityErrorHandler securityErrors;
+
+    @Test
+    void loggingProxiesAreActive() {
+        assertThat(org.springframework.aop.support.AopUtils.isAopProxy(controller)).isTrue();
+        assertThat(org.springframework.aop.support.AopUtils.isAopProxy(service)).isTrue();
+        assertThat(org.springframework.aop.support.AopUtils.isAopProxy(securityErrors)).isTrue();
+    }
+
     @Autowired
     CustomerRepository repository;
     @MockitoBean JwtDecoder decoder;
