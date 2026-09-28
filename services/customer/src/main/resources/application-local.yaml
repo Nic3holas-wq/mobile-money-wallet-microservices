@@ -1,0 +1,9 @@
+# Local delivery only. Never use this profile for production notifications.
+spring:
+  mail:
+    host: localhost
+    port: 1026
+    properties:
+      mail.smtp.connectiontimeout: 3000
+      mail.smtp.timeout: 3000
+      mail.smtp.writetimeout: 3000

@@ -77,6 +77,9 @@ public class Customer {
     @Column(name = "wallet_eligible", nullable = false)
     private boolean walletEligible;
 
+    @Column(name = "preferred_name")
+    private String preferredName;
+
     @Column(name = "preferred_language", nullable = false)
     private String preferredLanguage;
 

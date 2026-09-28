@@ -18,18 +18,36 @@ import java.util.concurrent.TimeUnit;
 public class LoggingAspect {
     @Around("execution(public * com.nicko.customer.controller..*(..))")
     public Object logController(ProceedingJoinPoint invocation) throws Throwable {
-        return logOperation(invocation, true);
+        return logOperation(invocation, "controller");
     }
 
     @Around("execution(public * com.nicko.customer.service..*(..))")
     public Object logService(ProceedingJoinPoint invocation) throws Throwable {
-        return logOperation(invocation, false);
+        return logOperation(invocation, "service");
     }
 
-    private Object logOperation(ProceedingJoinPoint invocation, boolean controller) throws Throwable {
+    @Around("execution(public * com.nicko.customer.mapper..*(..))")
+    public Object logMapper(ProceedingJoinPoint invocation) throws Throwable {
+        return logOperation(invocation, "mapper");
+    }
+
+    // Match the repository proxy, including inherited JpaRepository methods.
+    @Around("this(org.springframework.data.repository.Repository) && bean(*Repository) && execution(public * *(..))")
+    public Object logRepository(ProceedingJoinPoint invocation) throws Throwable {
+        return logOperation(invocation, "repository");
+    }
+
+    @Around("execution(public * com.nicko.customer.config.DocumentProtection.*(..)) || "
+            + "execution(public * com.nicko.customer.config.CustomerJwtAuthenticationConverter.*(..))")
+    public Object logInfrastructure(ProceedingJoinPoint invocation) throws Throwable {
+        return logOperation(invocation, "security");
+    }
+
+    private Object logOperation(ProceedingJoinPoint invocation, String layer) throws Throwable {
+        boolean controller = "controller".equals(layer);
         String operation = invocation.getSignature().toShortString();
         long started = System.nanoTime();
-        log.debug("operation={} event=started", operation);
+        log.debug("layer={} operation={} event=started", layer, operation);
         try {
             Object result = invocation.proceed();
             long duration = elapsedMillis(started);
@@ -37,7 +55,7 @@ public class LoggingAspect {
                 int status = result instanceof ResponseEntity<?> response ? response.getStatusCode().value() : 200;
                 log.info("operation={} event=completed status={} durationMs={}", operation, status, duration);
             } else {
-                log.debug("operation={} event=completed durationMs={}", operation, duration);
+                log.debug("layer={} operation={} event=completed durationMs={}", layer, operation, duration);
             }
             return result;
         } catch (Throwable failure) {
@@ -45,7 +63,7 @@ public class LoggingAspect {
             String errorType = failure.getClass().getSimpleName();
             long duration = elapsedMillis(started);
             if (!controller) {
-                log.debug("operation={} event=failed errorType={} durationMs={}", operation, errorType, duration);
+                log.debug("layer={} operation={} event=failed errorType={} durationMs={}", layer, operation, errorType, duration);
             } else if (failure instanceof ResponseStatusException status && status.getStatusCode().is4xxClientError()) {
                 log.warn("operation={} event=rejected status={} errorType={} durationMs={}",
                         operation, status.getStatusCode().value(), errorType, duration);

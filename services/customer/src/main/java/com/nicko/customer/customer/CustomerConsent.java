@@ -43,6 +43,9 @@ public class CustomerConsent {
     @Column(name = "consent_type", nullable = false)
     private ConsentType consentType;
 
+    @Column(name = "channel", nullable = false, length = 30)
+    private String channel;
+
     @Column(name = "document_version", nullable = false)
     private String documentVersion;
 

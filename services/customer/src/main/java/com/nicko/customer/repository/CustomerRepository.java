@@ -16,5 +16,9 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
     @Query("select c from Customer c where c.keycloakUserId = :userId")
     Optional<Customer> findForUpdateByUserId(@Param("userId") UUID userId);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select c from Customer c where c.id = :id")
+    Optional<Customer> findForUpdateById(@Param("id") UUID id);
+
     boolean existsByKeycloakUserId(UUID keycloakUserId);
 }

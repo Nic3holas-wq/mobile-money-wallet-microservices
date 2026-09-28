@@ -55,8 +55,8 @@ class CustomerResourcesApiTests {
     }
 
     private String phone(boolean primary) {
-        return "{\"contactType\":\"PHONE\",\"contactValue\":\"+2547"
-                + String.format("%08d", Math.floorMod(UUID.randomUUID().getLeastSignificantBits(), 100000000L))
+        return "{\"contactType\":\"PHONE\",\"contactValue\":\"+25471"
+                + String.format("%07d", Math.floorMod(UUID.randomUUID().getLeastSignificantBits(), 10000000L))
                 + "\",\"primary\":" + primary + "}";
     }
 
@@ -100,12 +100,11 @@ class CustomerResourcesApiTests {
         mvc.perform(as(put(ROOT + "contacts/" + id), user).contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.verified").value(true));
         mvc.perform(as(put(ROOT + "contacts/" + id), user).contentType(MediaType.APPLICATION_JSON).content(phone(true)))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.verified").value(false))
-                .andExpect(jsonPath("$.verifiedAt").isEmpty()).andExpect(jsonPath("$.verificationSource").isEmpty());
-        mvc.perform(as(get(ROOT + "contacts"), user)).andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalElements").value(1));
-        mvc.perform(as(delete(ROOT + "contacts/" + id), user)).andExpect(status().isNoContent());
-        mvc.perform(as(get(ROOT + "contacts/" + id), user)).andExpect(status().isNotFound());
+                .andExpect(status().isConflict());
+        mvc.perform(as(get(ROOT + "contacts/" + id), user)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.verified").value(true));
+        mvc.perform(as(delete(ROOT + "contacts/" + id), user)).andExpect(status().isConflict());
+
     }
 
     @Test

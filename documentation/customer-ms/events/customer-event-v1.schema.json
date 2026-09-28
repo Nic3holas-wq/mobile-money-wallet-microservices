@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Customer event envelope v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "eventType", "schemaVersion", "occurredAt", "customerId", "correlationId", "data"],
+  "properties": {
+    "eventId": {"type": "string", "format": "uuid"},
+    "eventType": {"type": "string", "pattern": "^customer\\.[a-z.]+\\.v1$"},
+    "schemaVersion": {"const": 1},
+    "occurredAt": {"type": "string", "format": "date-time"},
+    "customerId": {"type": "string", "format": "uuid"},
+    "correlationId": {"type": "string", "format": "uuid"},
+    "data": {"type": "object"}
+  }
+}

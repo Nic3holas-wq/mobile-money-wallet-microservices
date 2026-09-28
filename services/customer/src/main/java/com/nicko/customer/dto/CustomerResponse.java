@@ -9,6 +9,6 @@ import java.util.UUID;
 
 public record CustomerResponse(UUID id, String customerNumber, String firstName,
         String middleName, String lastName, LocalDate dateOfBirth, String gender,
-        String nationality, String preferredLanguage, CustomerStatus customerStatus,
+        String nationality, String preferredLanguage, String preferredName, CustomerStatus customerStatus,
         KycStatus kycStatus, KycTier kycTier, boolean walletEligible, Instant createdAt) {
 }

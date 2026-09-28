@@ -91,6 +91,8 @@ management:
       probability: ${TRACING_SAMPLING_PROBABILITY:1.0}
 
 logging:
+  pattern:
+    level: "%5p [requestId:%X{requestId:-none}]"
   level:
     root: INFO
     com.nicko.customer: INFO
@@ -99,6 +101,11 @@ logging:
     org.hibernate.SQL: INFO
 
 app:
+  security:
+    admin-role: ${CUSTOMER_ADMIN_ROLE:customer-admin}
+  kyc:
+    document-encryption-key: ${CUSTOMER_DOCUMENT_ENCRYPTION_KEY:}
+    document-hash-key: ${CUSTOMER_DOCUMENT_HASH_KEY:}
   kafka:
     enabled: ${KAFKA_ENABLED:false}
 
@@ -108,3 +115,12 @@ app:
       customer-suspended: customer.suspended.v1
       kyc-submitted: customer.kyc.submitted.v1
       kyc-verified: customer.kyc.verified.v1
+  onboarding:
+    minimum-age: ${CUSTOMER_MINIMUM_AGE:18}
+  consent:
+    terms-version: ${CUSTOMER_TERMS_VERSION:v1}
+    privacy-version: ${CUSTOMER_PRIVACY_VERSION:v1}
+    marketing-version: ${CUSTOMER_MARKETING_VERSION:v1}
+  verification:
+    hmac-key: ${CUSTOMER_VERIFICATION_HMAC_KEY:}
+    sms-inbox: ${CUSTOMER_SMS_TEST_INBOX:.local/customer-sms}

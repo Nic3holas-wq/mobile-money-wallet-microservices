@@ -18,6 +18,16 @@ public class CustomerOwnership {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not registered"));
     }
 
+    public Customer requireById(UUID customerId) {
+        return customers.findById(customerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
+    }
+
+    public Customer lockById(UUID customerId) {
+        return customers.findForUpdateById(customerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
+    }
+
     // Called inside the resource service's write transaction. Serializes primary changes per customer.
     public Customer lock(UUID userId) {
         return customers.findForUpdateByUserId(userId)

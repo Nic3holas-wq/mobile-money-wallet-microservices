@@ -19,7 +19,17 @@ public class CustomerAddressMapper {
     }
 
     public CustomerAddressResponse toResponse(CustomerAddress entity) {
-        return new CustomerAddressResponse(entity.getId(), entity.getAddressType(), entity.getCountryCode(), entity.getCounty(), entity.getCityOrTown(), entity.getPostalCode(), entity.getAddressLine1(), entity.getAddressLine2(),
-                entity.isPrimary(), entity.getCreatedAt(), entity.getUpdatedAt());
+        return new CustomerAddressResponse(
+                entity.getId(),
+                entity.getAddressType(),
+                entity.getCountryCode(),
+                entity.getCounty(),
+                entity.getCityOrTown(),
+                entity.getPostalCode(),
+                entity.getAddressLine1(),
+                entity.getAddressLine2(),
+                entity.isPrimary(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt());
     }
 }

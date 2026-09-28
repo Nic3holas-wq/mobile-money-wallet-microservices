@@ -20,10 +20,21 @@ public class CustomerMapper {
     }
 
     public CustomerResponse toResponse(Customer customer) {
-        return new CustomerResponse(customer.getId(), customer.getCustomerNumber(),
-                customer.getFirstName(), customer.getMiddleName(), customer.getLastName(),
-                customer.getDateOfBirth(), customer.getGender(), customer.getNationality(),
-                customer.getPreferredLanguage(), customer.getCustomerStatus(), customer.getKycStatus(),
-                customer.getKycTier(), customer.isWalletEligible(), customer.getCreatedAt());
+        return new CustomerResponse(
+                customer.getId(),
+                customer.getCustomerNumber(),
+                customer.getFirstName(),
+                customer.getMiddleName(),
+                customer.getLastName(),
+                customer.getDateOfBirth(),
+                customer.getGender(),
+                customer.getNationality(),
+                customer.getPreferredLanguage(),
+                customer.getPreferredName(),
+                customer.getCustomerStatus(),
+                customer.getKycStatus(),
+                customer.getKycTier(),
+                customer.isWalletEligible(),
+                customer.getCreatedAt());
     }
 }

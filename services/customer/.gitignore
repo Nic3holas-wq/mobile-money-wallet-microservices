@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Local verification test inbox (contains temporary OTPs)
+.local/

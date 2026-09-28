@@ -60,9 +60,9 @@ class LoggingAspectTests {
         CustomerService service = mock(CustomerService.class);
         CustomerResponse response = new CustomerResponse(UUID.randomUUID(), "private-customer-number",
                 "private-first-name", null, "private-last-name", null, null, "KE", "en",
-                null, null, null, false, null);
+                null, null, null, null, false, null);
         when(service.getCurrent(user)).thenReturn(response);
-        CustomerController controller = proxy(new CustomerController(service));
+        CustomerController controller = proxy(new CustomerController(service, mock(com.nicko.customer.service.CustomerCompletionService.class)));
         Jwt token = Jwt.withTokenValue("secret-access-token").header("alg", "RS256").subject(user.toString()).build();
         assertThat(controller.getCurrent(token)).isSameAs(response);
         verify(service, times(1)).getCurrent(user);
@@ -82,7 +82,7 @@ class LoggingAspectTests {
         CustomerService service = mock(CustomerService.class);
         var failure = new ResponseStatusException(HttpStatus.NOT_FOUND, "private-personal-information");
         when(service.getCurrent(user)).thenThrow(failure);
-        CustomerController controller = proxy(new CustomerController(service));
+        CustomerController controller = proxy(new CustomerController(service, mock(com.nicko.customer.service.CustomerCompletionService.class)));
         Jwt token = Jwt.withTokenValue("secret-access-token").header("alg", "RS256").subject(user.toString()).build();
         assertThatThrownBy(() -> controller.getCurrent(token)).isSameAs(failure);
         assertThat(events.list).anySatisfy(event -> {

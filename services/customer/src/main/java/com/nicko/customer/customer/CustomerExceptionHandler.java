@@ -1,13 +1,13 @@
 package com.nicko.customer.customer;
 
 import org.hibernate.exception.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -42,6 +42,23 @@ public class CustomerExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(exception, problem, headers, status, request);
     }
 
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ProblemDetail handleAccessDenied(org.springframework.security.access.AccessDeniedException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "Access to this resource is denied");
+    }
+
+    @ExceptionHandler(org.springframework.orm.ObjectOptimisticLockingFailureException.class)
+    public ProblemDetail handleConcurrentUpdate(org.springframework.orm.ObjectOptimisticLockingFailureException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Resource changed; retrieve it and retry");
+    }
+
+    @ExceptionHandler(com.nicko.customer.service.FieldValidationException.class)
+    public ProblemDetail handleField(com.nicko.customer.service.FieldValidationException exception) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid customer details");
+        problem.setProperty("errors", Map.of(exception.field(), exception.getMessage()));
+        return problem;
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleUnexpected(Exception exception) {
         log.error("event=unexpected_api_failure errorType={}", exception.getClass().getSimpleName());
@@ -51,6 +68,14 @@ public class CustomerExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ProblemDetail handleConflict(DataIntegrityViolationException exception) {
         for (Throwable cause = exception; cause != null; cause = cause.getCause()) {
+            if (cause instanceof ConstraintViolationException duplicate) {
+                if ("uk_kyc_document_document_number_hash".equals(duplicate.getConstraintName())) {
+                    return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Document is already registered");
+                }
+                if ("uk_kyc_profile_customer_id".equals(duplicate.getConstraintName())) {
+                    return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "KYC profile already exists");
+                }
+            }
             if (cause instanceof ConstraintViolationException contactViolation
                     && "uk_customer_contact_type_value".equals(contactViolation.getConstraintName())) {
                 return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Contact is already in use");
