@@ -7,6 +7,13 @@ and Hibernate validates the schema at startup.
 
 ## Register the authenticated customer
 
+API documentation is available at `http://localhost:8081/swagger-ui/index.html`
+after starting the service. The OpenAPI JSON is at `/v3/api-docs`.
+Click **Authorize** and paste your Keycloak access token (without the `Bearer `
+prefix) to use **Try it out**. The token must include the `customer-service`
+audience; admin operations also require the customer admin authority.
+Documentation is publicly readable; API operations retain their authorization rules.
+
 `POST /api/v1/customers` with `Authorization: Bearer <access-token>` and
 `Content-Type: application/json`:
 
