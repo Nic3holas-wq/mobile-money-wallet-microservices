@@ -52,6 +52,7 @@ class RemainingEntitiesApiTests {
     @Autowired CustomerLimitRepository limits;
     @Autowired OutboxEventRepository outbox;
     @Autowired CustomerAuditRepository audit;
+    @Autowired CustomerContactRepository contacts;
     @MockitoBean JwtDecoder decoder;
     private UUID user, other, admin, customerId;
 
@@ -255,6 +256,54 @@ class RemainingEntitiesApiTests {
         mvc.perform(staff(get(adminRoot() + "/audit-records").param("size", "101"))).andExpect(status().isBadRequest());
         mvc.perform(staff(delete(adminRoot() + "/audit-records"))).andExpect(status().isMethodNotAllowed());
         assertThat(json.writeValueAsString(history)).doesNotContain("documentNumber", "frontFileReference", "test-file-reference");
+    }
+
+    @Test
+    void staffActivateOnlyCustomersWhoCompletedOnboarding() throws Exception {
+        String activation = adminRoot() + "/activation";
+        mvc.perform(as(post(activation), user)).andExpect(status().isForbidden());
+        mvc.perform(staff(post("/api/v1/admin/customers/" + UUID.randomUUID() + "/activation"))).andExpect(status().isNotFound());
+        mvc.perform(staff(post(activation))).andExpect(status().isConflict())
+                .andExpect(jsonPath("$.detail").value(org.hamcrest.Matchers.allOf(
+                        org.hamcrest.Matchers.containsString("VERIFY_PRIMARY_PHONE"),
+                        org.hamcrest.Matchers.containsString("ACCEPT_REQUIRED_POLICIES"),
+                        org.hamcrest.Matchers.containsString("COMPLETE_KYC"))));
+
+        createProfile(user);
+        String documentId = addDocument(UUID.randomUUID().toString());
+        mvc.perform(as(post(ME + "/kyc-profile/submission"), user)).andExpect(status().isOk());
+        mvc.perform(staff(post(adminRoot() + "/kyc-profile/documents/" + documentId + "/review"))
+                .contentType(MediaType.APPLICATION_JSON).content(DOC_APPROVAL)).andExpect(status().isOk());
+        mvc.perform(staff(post(adminRoot() + "/kyc-profile/review")).contentType(MediaType.APPLICATION_JSON).content(APPROVAL))
+                .andExpect(status().isOk());
+        for (String type : new String[]{"TERMS_AND_CONDITIONS", "PRIVACY_POLICY"}) {
+            mvc.perform(as(post(ME + "/consents"), user).contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"consentType\":\"" + type + "\",\"documentVersion\":\"v1\"}")).andExpect(status().isCreated());
+        }
+        String digits = "071" + String.format("%07d", Math.floorMod(UUID.randomUUID().getLeastSignificantBits(), 10000000L));
+        var phone = mvc.perform(as(post(ME + "/contacts"), user).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"contactType\":\"PHONE\",\"contactValue\":\"" + digits + "\",\"phoneRegion\":\"KE\",\"primary\":true}"))
+                .andExpect(status().isCreated()).andReturn();
+        mvc.perform(staff(post(activation))).andExpect(status().isConflict())
+                .andExpect(jsonPath("$.detail").value("Customer is not ready for activation: VERIFY_PRIMARY_PHONE"));
+        var contact = contacts.findById(UUID.fromString(json.readTree(phone.getResponse().getContentAsString()).get("id").asText())).orElseThrow();
+        contact.setVerified(true); contacts.saveAndFlush(contact);
+
+        UUID staffId = admin; admin = user;
+        mvc.perform(staff(post(activation))).andExpect(status().isForbidden());
+        admin = staffId;
+        mvc.perform(staff(post(activation))).andExpect(status().isOk())
+                .andExpect(jsonPath("$.customerStatus").value("ACTIVE")).andExpect(jsonPath("$.walletEligible").value(true));
+        mvc.perform(staff(post(activation))).andExpect(status().isConflict());
+        mvc.perform(as(get(ME), user)).andExpect(jsonPath("$.customerStatus").value("ACTIVE"));
+        assertThat(audit.findByCustomerId(customerId, org.springframework.data.domain.Pageable.unpaged()).getContent())
+                .anySatisfy(entry -> {
+                    assertThat(entry.getAction()).isEqualTo("CUSTOMER_ACTIVATED");
+                    assertThat(entry.getActorId()).isEqualTo(admin);
+                    assertThat(entry.getAfterState()).containsEntry("status", "ACTIVE");
+                });
+        assertThat(outbox.findByCustomerId(customerId, org.springframework.data.domain.Pageable.unpaged()).getContent())
+                .anySatisfy(event -> assertThat(event.getEventType()).isEqualTo("customer.activated.v1"));
     }
 
     @Test

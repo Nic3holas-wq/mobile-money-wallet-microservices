@@ -295,6 +295,7 @@ the UUID from the customer API, not the Keycloak user UUID.
 | `/kyc-profile/documents` | GET paginated list |
 | `/kyc-profile/documents/{id}/review` | POST verify or reject a document |
 | `/outbox-events` and `/outbox-events/{id}` | GET metadata only |
+| `/activation` | POST activate a customer who completed onboarding |
 
 Default staff role: Keycloak **realm role** `customer-admin`. Create that role
 in `mobile-money-wallet`, assign it to a separate staff user, and obtain a fresh
@@ -357,7 +358,17 @@ screening or a complete compliance process. No expiry scheduler is implemented.
 
 Reviews update the customer's KYC status/tier and create an outbox event in the
 same transaction. Approval does not activate the customer or enable a wallet;
-wallet eligibility remains false until its separate policy is implemented.
+staff activate separately with `POST /activation` (no body).
+
+Activation applies the same checks as `GET /api/v1/customers/me/completion`:
+minimum age, verified primary phone, accepted mandatory policies, and approved,
+unexpired KYC with all documents verified. If any step is outstanding it returns
+409 listing the steps, e.g. `Customer is not ready for activation: VERIFY_PRIMARY_PHONE`.
+Only `PENDING` customers can be activated, and staff cannot activate themselves.
+Success sets `customerStatus` to `ACTIVE` and `walletEligible` to true, and records a
+`CUSTOMER_ACTIVATED` audit entry and a `customer.activated.v1` outbox event.
+KYC resubmission, KYC review and mandatory consent withdrawal reset
+`walletEligible` to false; they do not change `customerStatus`.
 Outbox records remain PENDING: Kafka publishing/retries are a separate feature.
 There are no public endpoints for arbitrary outbox creation, mutation or deletion.
 

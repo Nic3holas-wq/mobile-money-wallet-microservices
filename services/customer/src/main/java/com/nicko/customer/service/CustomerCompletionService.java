@@ -1,5 +1,6 @@
 package com.nicko.customer.service;
 
+import com.nicko.customer.customer.Customer;
 import com.nicko.customer.dto.CustomerCompletionResponse;
 import com.nicko.customer.customer.enums.*;
 import com.nicko.customer.repository.*;
@@ -23,7 +24,13 @@ public class CustomerCompletionService {
     private final OnboardingPolicy policy;
     @Transactional(readOnly = true)
     public CustomerCompletionResponse get(UUID userId) {
-        var customer = ownership.require(userId);
+        var missing = outstandingSteps(ownership.require(userId));
+        // Completion guides onboarding; it does not activate the customer or authorize a wallet.
+        return new CustomerCompletionResponse(missing.isEmpty(), missing);
+    }
+
+    // Shared with staff activation so both apply the same onboarding requirements.
+    java.util.List<String> outstandingSteps(Customer customer) {
         var missing = new ArrayList<String>();
         if (!policy.oldEnough(customer.getDateOfBirth())) { missing.add("MINIMUM_AGE_NOT_MET"); }
         if (contacts.findByCustomerIdAndContactTypeAndPrimaryTrue(customer.getId(), ContactType.PHONE)
@@ -38,7 +45,6 @@ public class CustomerCompletionService {
                     && (d.getExpiresAt() == null || d.getExpiresAt().isAfter(LocalDate.now(clock))));
         }
         if (!validKyc) { missing.add("COMPLETE_KYC"); }
-        // Completion guides onboarding; it does not activate the customer or authorize a wallet.
-        return new CustomerCompletionResponse(missing.isEmpty(), java.util.List.copyOf(missing));
+        return java.util.List.copyOf(missing);
     }
 }

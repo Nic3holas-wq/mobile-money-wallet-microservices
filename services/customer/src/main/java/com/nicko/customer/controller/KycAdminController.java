@@ -16,16 +16,20 @@ import static com.nicko.customer.config.AuthenticatedCustomer.userId;
 public class KycAdminController {
     private final KycProfileService profiles;
     private final KycDocumentService documents;
+
     @GetMapping
     public KycProfileResponse get(@PathVariable UUID customerId) { return profiles.getForReview(customerId); }
+
     @PostMapping("/review")
     public KycProfileResponse review(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID customerId,
             @Valid @RequestBody KycReviewRequest request) { return profiles.review(customerId, userId(jwt), request); }
+
     @GetMapping("/documents")
     public PageResponse<KycDocumentResponse> documents(@PathVariable UUID customerId,
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
         return documents.listForReview(customerId, page, size);
     }
+
     @PostMapping("/documents/{id}/review")
     public KycDocumentResponse reviewDocument(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID customerId,
             @PathVariable UUID id, @Valid @RequestBody KycDocumentReviewRequest request) {

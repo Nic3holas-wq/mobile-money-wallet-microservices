@@ -10,6 +10,7 @@ import com.nicko.customer.repository.CustomerRepository;
 import com.nicko.customer.mapper.CustomerMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,6 +27,7 @@ public class CustomerService {
     private final java.time.Clock clock;
     private final org.springframework.jdbc.core.JdbcTemplate jdbc;
     private final OnboardingPolicy policy;
+    private final CustomerCompletionService completion;
 
     @Transactional
     public CustomerResponse register(UUID userId, RegisterCustomerRequest request) {
@@ -79,4 +81,29 @@ public class CustomerService {
         return mapper.toResponse(repository.saveAndFlush(customer));
     }
 
+    @PreAuthorize("hasAuthority('CUSTOMER_ADMIN')")
+    @Transactional
+    public CustomerResponse activate(UUID customerId, UUID reviewer) {
+        var customer = ownership.lockById(customerId);
+        if (customer.getKeycloakUserId().equals(reviewer)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Staff cannot activate their own customer record");
+        }
+        if (customer.getCustomerStatus() != CustomerStatus.PENDING) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Only pending customers can be activated");
+        }
+        var missing = completion.outstandingSteps(customer);
+        if (!missing.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Customer is not ready for activation: " + String.join(", ", missing));
+        }
+        customer.setCustomerStatus(CustomerStatus.ACTIVE);
+        customer.setWalletEligible(true);
+        repository.saveAndFlush(customer);
+        audit.record(customer.getId(), reviewer, "CUSTOMER_ACTIVATED", "CUSTOMER", customer.getId(),
+                java.util.Map.of("status", "PENDING", "walletEligible", false),
+                java.util.Map.of("status", "ACTIVE", "walletEligible", true, "kycTier", customer.getKycTier().name()));
+        outbox.record(customer, "customer.activated.v1", "CUSTOMER", customer.getId(),
+                java.util.Map.of("status", "ACTIVE", "kycTier", customer.getKycTier().name()));
+        return mapper.toResponse(customer);
+    }
 }
