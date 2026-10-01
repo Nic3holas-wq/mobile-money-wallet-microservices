@@ -1,3 +1,59 @@
+server:
+  port: 8080
+  shutdown: graceful
+  forward-headers-strategy: framework
+
 spring:
   application:
-    name: gateway
+    name: api-gateway
+
+  cloud:
+    config:
+      enabled: false
+    gateway:
+      server:
+        webflux:
+          routes:
+            # Docs route: gateway /customer-service/v3/api-docs -> customer-service /v3/api-docs
+            - id: customer-service-docs
+              uri: http://customer-service:8081
+              predicates:
+                - Path=/customer-service/v3/api-docs/**
+              filters:
+                - StripPrefix=1
+
+            # Business API route
+            - id: customer-service
+              uri: http://customer-service:8081
+              predicates:
+                - Path=/api/v1/customers/**,/api/v1/admin/**
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://keycloak:8080/realms/mobile-money-wallet/protocol/openid-connect/certs
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: customer-service
+        url: /customer-service/v3/api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: INFO
+    org.springframework.security: INFO

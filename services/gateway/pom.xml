@@ -42,9 +42,17 @@
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
+		<!-- Correct Reactive Spring Cloud Gateway (No <version> tag needed) -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-gateway</artifactId>
+			<artifactId>spring-cloud-starter-gateway-server-webflux</artifactId>
+		</dependency>
+
+		<!-- Correct Reactive Springdoc UI -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+			<version>3.0.0</version>
 		</dependency>
 
 		<dependency>
