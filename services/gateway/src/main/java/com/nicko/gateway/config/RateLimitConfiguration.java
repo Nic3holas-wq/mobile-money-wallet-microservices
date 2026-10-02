@@ -1,48 +1,40 @@
 package com.nicko.gateway.config;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
+import org.springframework.cloud.gateway.support.ipresolver.XForwardedRemoteAddressResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.net.InetSocketAddress;
 
 @Configuration
 public class RateLimitConfiguration {
 
     @Bean
-    public KeyResolver userKeyResolver() {
-        return exchange ->
-                exchange.getPrincipal()
-                        .map(principal -> "user:" + principal.getName())
-                        .switchIfEmpty(
-                                Mono.just(
-                                        "ip:" + resolveClientIp(exchange)
-                                )
-                        );
+    public KeyResolver userKeyResolver(
+            @Value("${app.rate-limit.trusted-proxies:0}") int trustedProxies) {
+
+        XForwardedRemoteAddressResolver proxyResolver = trustedProxies > 0
+                ? XForwardedRemoteAddressResolver.maxTrustedIndex(trustedProxies)
+                : null;
+
+        return exchange -> exchange.getPrincipal()
+                .map(principal -> "user:" + principal.getName())
+                .switchIfEmpty(Mono.fromSupplier(
+                        () -> "ip:" + resolveClientIp(exchange, proxyResolver)));
     }
 
-    private String resolveClientIp(
-            org.springframework.web.server.ServerWebExchange exchange) {
+    private String resolveClientIp(ServerWebExchange exchange,
+                                   XForwardedRemoteAddressResolver proxyResolver) {
+        InetSocketAddress address = proxyResolver != null
+                ? proxyResolver.resolve(exchange)
+                : exchange.getRequest().getRemoteAddress();
 
-        String forwardedFor =
-                exchange.getRequest()
-                        .getHeaders()
-                        .getFirst("X-Forwarded-For");
-
-        if (forwardedFor != null && !forwardedFor.isBlank()) {
-            return forwardedFor.split(",")[0].trim();
-        }
-
-        var remoteAddress =
-                exchange.getRequest().getRemoteAddress();
-
-        if (remoteAddress != null &&
-                remoteAddress.getAddress() != null) {
-
-            return remoteAddress
-                    .getAddress()
-                    .getHostAddress();
-        }
-
-        return "unknown";
+        return (address != null && address.getAddress() != null)
+                ? address.getAddress().getHostAddress()
+                : "unknown";
     }
 }

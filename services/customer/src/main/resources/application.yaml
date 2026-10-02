@@ -64,7 +64,7 @@ spring:
       auto-offset-reset: earliest
       enable-auto-commit: false
       properties:
-        spring.json.trusted.packages: "com.verapay.customer.event"
+        spring.json.trusted.packages: "com.nicko.customer.event"
 
   web:
     error:
@@ -97,13 +97,13 @@ management:
 
 logging:
   pattern:
-    level: "%5p [requestId:%X{requestId:-none}]"
+    level: "%5p [traceId:%X{traceId:-}] [requestId:%X{requestId:-none}]"
 
   level:
     root: INFO
     com.nicko.customer: INFO
     com.nicko.customer.logging: ${CUSTOMER_LOG_LEVEL:INFO}
-    org.springframework.security: DEBUG
+    org.springframework.security: INFO
     org.hibernate.SQL: INFO
 
 app:

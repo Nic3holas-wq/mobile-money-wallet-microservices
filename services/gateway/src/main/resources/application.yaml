@@ -6,6 +6,9 @@ server:
 spring:
   application:
     name: api-gateway
+app:
+  rate-limit:
+    trusted-proxies: ${RATE_LIMIT_TRUSTED_PROXIES:0}
 
   data:
     redis:
