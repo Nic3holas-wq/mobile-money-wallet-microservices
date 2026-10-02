@@ -2,6 +2,8 @@ package com.nicko.gateway.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
+import org.springframework.cloud.gateway.route.Route;
+import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.cloud.gateway.support.ipresolver.XForwardedRemoteAddressResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,10 +23,15 @@ public class RateLimitConfiguration {
                 ? XForwardedRemoteAddressResolver.maxTrustedIndex(trustedProxies)
                 : null;
 
-        return exchange -> exchange.getPrincipal()
-                .map(principal -> "user:" + principal.getName())
-                .switchIfEmpty(Mono.fromSupplier(
-                        () -> "ip:" + resolveClientIp(exchange, proxyResolver)));
+        return exchange -> {
+            Route route = exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR);
+            String routeId = route != null ? route.getId() : "none";
+
+            return exchange.getPrincipal()
+                    .map(principal -> routeId + ":user:" + principal.getName())
+                    .switchIfEmpty(Mono.fromSupplier(
+                            () -> routeId + ":ip:" + resolveClientIp(exchange, proxyResolver)));
+        };
     }
 
     private String resolveClientIp(ServerWebExchange exchange,
