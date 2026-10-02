@@ -1,14 +1,10 @@
 server:
   port: 8080
   shutdown: graceful
-  forward-headers-strategy: framework
 
 spring:
   application:
     name: api-gateway
-app:
-  rate-limit:
-    trusted-proxies: ${RATE_LIMIT_TRUSTED_PROXIES:0}
 
   data:
     redis:
@@ -17,6 +13,7 @@ app:
 
   reactor:
     context-propagation: auto
+
   cloud:
     config:
       enabled: false
@@ -50,6 +47,12 @@ app:
       resourceserver:
         jwt:
           jwk-set-uri: http://keycloak:8080/realms/mobile-money-wallet/protocol/openid-connect/certs
+
+app:
+  rate-limit:
+    trusted-proxies: ${RATE_LIMIT_TRUSTED_PROXIES:0}
+  security:
+    admin-role: ${CUSTOMER_ADMIN_ROLE:customer-admin}
 
 springdoc:
   swagger-ui:
