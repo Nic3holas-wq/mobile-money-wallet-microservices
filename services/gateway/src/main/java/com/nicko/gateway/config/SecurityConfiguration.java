@@ -14,6 +14,14 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import reactor.core.publisher.Mono;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
+import java.util.List;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -22,6 +30,31 @@ import java.util.Map;
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfiguration {
+    @Bean
+    public ReactiveJwtDecoder reactiveJwtDecoder(
+            @Value("${app.security.jwk-set-uri}") String jwkSetUri,
+            @Value("${app.security.issuer-uri}") String issuerUri,
+            @Value("${app.security.allowed-audiences:customer-service}") List<String> allowedAudiences) {
+
+        NimbusReactiveJwtDecoder decoder =
+                NimbusReactiveJwtDecoder.withJwkSetUri(jwkSetUri).build();
+
+
+        OAuth2TokenValidator<Jwt> audienceValidator = jwt -> {
+            List<String> aud = jwt.getAudience();
+            if (aud != null && aud.stream().anyMatch(allowedAudiences::contains)) {
+                return OAuth2TokenValidatorResult.success();
+            }
+            return OAuth2TokenValidatorResult.failure(
+                    new OAuth2Error("invalid_token", "The required audience is missing", null));
+        };
+
+        decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(
+                JwtValidators.createDefaultWithIssuer(issuerUri),
+                audienceValidator));
+
+        return decoder;
+    }
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(

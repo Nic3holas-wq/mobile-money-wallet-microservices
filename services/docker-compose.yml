@@ -42,7 +42,6 @@ services:
 
     environment:
       SERVER_PORT: 8080
-      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/mobile-money-wallet
       REDIS_HOST: redis
       REDIS_PORT: 6379
 

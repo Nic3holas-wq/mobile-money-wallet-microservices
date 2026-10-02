@@ -53,6 +53,9 @@ app:
     trusted-proxies: ${RATE_LIMIT_TRUSTED_PROXIES:0}
   security:
     admin-role: ${CUSTOMER_ADMIN_ROLE:customer-admin}
+    issuer-uri: ${GATEWAY_ISSUER_URI:http://localhost:9091/realms/mobile-money-wallet}
+    jwk-set-uri: ${GATEWAY_JWK_SET_URI:http://keycloak:8080/realms/mobile-money-wallet/protocol/openid-connect/certs}
+    allowed-audiences: ${GATEWAY_ALLOWED_AUDIENCES:customer-service}
 
 springdoc:
   swagger-ui:
