@@ -20,12 +20,18 @@ spring:
     gateway:
       server:
         webflux:
+          httpclient:
+            connect-timeout: 2000        # ms to open a connection
+            response-timeout: 10s        # default max wait for a response
           routes:
             # Docs route: gateway /customer-service/v3/api-docs -> customer-service /v3/api-docs
             - id: customer-service-docs
               uri: http://customer-service:8081
               predicates:
                 - Path=/customer-service/v3/api-docs/**
+              metadata:
+                connect-timeout: 2000
+                response-timeout: 5000   # ms, overrides the global value for this route
               filters:
                 - StripPrefix=1
 
@@ -41,6 +47,11 @@ spring:
                     redis-rate-limiter.replenishRate: 2
                     redis-rate-limiter.burstCapacity: 20
                     redis-rate-limiter.requestedTokens: 1
+                - name: CircuitBreaker
+                  args:
+                    name: customer-service
+                    fallbackUri: forward:/fallback/customer-service
+                    statusCodes: 502,503,504
 
   security:
     oauth2:
