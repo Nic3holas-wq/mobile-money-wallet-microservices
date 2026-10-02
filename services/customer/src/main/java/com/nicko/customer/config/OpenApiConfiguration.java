@@ -14,7 +14,7 @@ public class OpenApiConfiguration {
     @Bean
     OpenAPI customerOpenApi() {
         return new OpenAPI()
-                .addServersItem(new Server().url("http://localhost:8080").description("API Gateway"))
+                .addServersItem(new Server().url("https://localhost").description("API Gateway"))
                 .info(new Info().title("Customer Service API").version("v1")
                         .description("Customer profiles, contacts, verification, consent and KYC."))
                 .components(new Components().addSecuritySchemes("bearerAuth", new SecurityScheme()
