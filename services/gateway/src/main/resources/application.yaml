@@ -7,6 +7,11 @@ spring:
   application:
     name: api-gateway
 
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+
   reactor:
     context-propagation: auto
   cloud:
@@ -29,6 +34,13 @@ spring:
               uri: http://customer-service:8081
               predicates:
                 - Path=/api/v1/customers/**,/api/v1/admin/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    redis-rate-limiter.replenishRate: 2
+                    redis-rate-limiter.burstCapacity: 20
+                    redis-rate-limiter.requestedTokens: 1
 
   security:
     oauth2:
