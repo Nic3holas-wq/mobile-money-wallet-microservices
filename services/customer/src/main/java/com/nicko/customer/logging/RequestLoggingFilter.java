@@ -14,18 +14,27 @@ import org.springframework.web.servlet.HandlerMapping;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Slf4j
 public class RequestLoggingFilter extends OncePerRequestFilter {
+
+    private static final String HEADER = "X-Request-Id";
+    // Same rule as the gateway: rejects newlines and odd characters that could forge log lines
+    private static final Pattern VALID_ID = Pattern.compile("^[A-Za-z0-9-]{8,64}$");
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String previous = MDC.get("requestId");
-        String requestId = UUID.randomUUID().toString();
+        String incoming = request.getHeader(HEADER);
+        String requestId = (incoming != null && VALID_ID.matcher(incoming).matches())
+                ? incoming
+                : UUID.randomUUID().toString();
         MDC.put("requestId", requestId);
-        response.setHeader("X-Request-ID", requestId);
+        response.setHeader(HEADER, requestId);
         long started = System.nanoTime();
         boolean failed = true;
         try {
