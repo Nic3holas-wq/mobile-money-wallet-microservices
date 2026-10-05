@@ -24,6 +24,23 @@ spring:
             connect-timeout: 2000        # ms to open a connection
             response-timeout: 10s        # default max wait for a response
           routes:
+            - id: customer-kyc-upload
+              uri: http://customer-service:8081
+              predicates:
+                - Path=/api/v1/customers/me/kyc-profile/documents/
+                - Method=POST
+              metadata:
+                response-timeout: 30000
+              filters:
+                - name: RequestSize
+                  args:
+                    maxSize: 6MB
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    redis-rate-limiter.replenishRate: 1
+                    redis-rate-limiter.burstCapacity: 5
+                    redis-rate-limiter.requestedTokens: 1
             # Docs route: gateway /customer-service/v3/api-docs -> customer-service /v3/api-docs
             - id: customer-service-docs
               uri: http://customer-service:8081

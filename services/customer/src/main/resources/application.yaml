@@ -6,6 +6,11 @@ spring:
     config:
       enabled: false
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
   datasource:
     url: jdbc:postgresql://${CUSTOMER_DB_HOST:postgresql}:${CUSTOMER_DB_PORT:5432}/${CUSTOMER_DB_NAME:customer_db}
     username: ${CUSTOMER_DB_USERNAME:nicko}
