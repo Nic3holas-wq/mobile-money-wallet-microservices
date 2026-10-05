@@ -1,6 +1,6 @@
 package com.nicko.customer.mapper;
 
-import com.nicko.customer.customer.CustomerLimit;
+import com.nicko.customer.entity.CustomerLimit;
 import com.nicko.customer.dto.CustomerLimitResponse;
 import com.nicko.customer.dto.CustomerLimitRequest;
 import org.springframework.stereotype.Component;

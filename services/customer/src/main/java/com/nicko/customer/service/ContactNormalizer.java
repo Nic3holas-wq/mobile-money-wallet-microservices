@@ -2,7 +2,7 @@ package com.nicko.customer.service;
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.NumberParseException;
-import com.nicko.customer.customer.enums.ContactType;
+import com.nicko.customer.entity.enums.ContactType;
 import com.nicko.customer.dto.CustomerContactRequest;
 import org.springframework.stereotype.Component;
 import java.util.Locale;

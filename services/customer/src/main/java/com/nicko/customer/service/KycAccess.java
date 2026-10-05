@@ -1,7 +1,7 @@
 package com.nicko.customer.service;
 
-import com.nicko.customer.customer.KycProfile;
-import com.nicko.customer.customer.enums.KycStatus;
+import com.nicko.customer.entity.KycProfile;
+import com.nicko.customer.entity.enums.KycStatus;
 import com.nicko.customer.repository.KycProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

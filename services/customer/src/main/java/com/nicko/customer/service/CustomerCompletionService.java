@@ -1,8 +1,8 @@
 package com.nicko.customer.service;
 
-import com.nicko.customer.customer.Customer;
+import com.nicko.customer.entity.Customer;
 import com.nicko.customer.dto.CustomerCompletionResponse;
-import com.nicko.customer.customer.enums.*;
+import com.nicko.customer.entity.enums.*;
 import com.nicko.customer.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

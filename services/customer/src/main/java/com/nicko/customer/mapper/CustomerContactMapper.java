@@ -1,8 +1,6 @@
 package com.nicko.customer.mapper;
 
-import com.nicko.customer.customer.enums.ContactType;
-import java.util.Locale;
-import com.nicko.customer.customer.CustomerContact;
+import com.nicko.customer.entity.CustomerContact;
 import com.nicko.customer.dto.CustomerContactRequest;
 import com.nicko.customer.dto.CustomerContactResponse;
 import org.springframework.stereotype.Component;

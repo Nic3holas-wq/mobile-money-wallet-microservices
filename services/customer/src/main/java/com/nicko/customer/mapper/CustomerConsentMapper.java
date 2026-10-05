@@ -1,6 +1,6 @@
 package com.nicko.customer.mapper;
 
-import com.nicko.customer.customer.CustomerConsent;
+import com.nicko.customer.entity.CustomerConsent;
 import com.nicko.customer.dto.CustomerConsentResponse;
 import org.springframework.stereotype.Component;
 

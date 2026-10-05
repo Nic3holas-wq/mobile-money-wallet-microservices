@@ -1,6 +1,6 @@
 package com.nicko.customer.service;
 
-import com.nicko.customer.customer.enums.ContactType;
+import com.nicko.customer.entity.enums.ContactType;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;

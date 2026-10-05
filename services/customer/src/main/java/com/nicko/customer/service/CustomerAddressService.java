@@ -1,7 +1,7 @@
 package com.nicko.customer.service;
 
-import com.nicko.customer.customer.Customer;
-import com.nicko.customer.customer.CustomerAddress;
+import com.nicko.customer.entity.Customer;
+import com.nicko.customer.entity.CustomerAddress;
 import com.nicko.customer.dto.CustomerAddressRequest;
 import com.nicko.customer.dto.CustomerAddressResponse;
 import com.nicko.customer.dto.PageResponse;

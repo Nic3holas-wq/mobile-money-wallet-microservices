@@ -1,6 +1,6 @@
 package com.nicko.customer.repository;
 
-import com.nicko.customer.customer.KycProfile;
+import com.nicko.customer.entity.KycProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 import java.util.UUID;

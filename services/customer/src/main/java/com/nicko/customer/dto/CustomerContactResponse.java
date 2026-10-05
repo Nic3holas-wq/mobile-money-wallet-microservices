@@ -1,7 +1,7 @@
 package com.nicko.customer.dto;
 
-import com.nicko.customer.customer.enums.ContactType;
-import com.nicko.customer.customer.enums.VerificationSource;
+import com.nicko.customer.entity.enums.ContactType;
+import com.nicko.customer.entity.enums.VerificationSource;
 import java.time.Instant;
 import java.util.UUID;
 

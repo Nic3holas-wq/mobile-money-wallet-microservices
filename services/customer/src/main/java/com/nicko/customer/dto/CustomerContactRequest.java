@@ -1,6 +1,6 @@
 package com.nicko.customer.dto;
 
-import com.nicko.customer.customer.enums.ContactType;
+import com.nicko.customer.entity.enums.ContactType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
 

@@ -1,6 +1,6 @@
 package com.nicko.customer.dto;
 
-import com.nicko.customer.customer.enums.AddressType;
+import com.nicko.customer.entity.enums.AddressType;
 import jakarta.validation.constraints.*;
 
 public record CustomerAddressRequest(

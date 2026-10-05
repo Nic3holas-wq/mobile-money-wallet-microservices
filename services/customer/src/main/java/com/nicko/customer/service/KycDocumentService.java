@@ -1,8 +1,8 @@
 package com.nicko.customer.service;
 
 import com.nicko.customer.config.DocumentProtection;
-import com.nicko.customer.customer.KycDocument;
-import com.nicko.customer.customer.enums.DocumentVerificationStatus;
+import com.nicko.customer.entity.KycDocument;
+import com.nicko.customer.entity.enums.DocumentVerificationStatus;
 import com.nicko.customer.dto.*;
 import com.nicko.customer.mapper.KycDocumentMapper;
 import com.nicko.customer.repository.KycDocumentRepository;

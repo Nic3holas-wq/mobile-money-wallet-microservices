@@ -1,8 +1,8 @@
 package com.nicko.customer.service;
 
 import java.util.Objects;
-import com.nicko.customer.customer.Customer;
-import com.nicko.customer.customer.CustomerContact;
+import com.nicko.customer.entity.Customer;
+import com.nicko.customer.entity.CustomerContact;
 import com.nicko.customer.dto.CustomerContactRequest;
 import com.nicko.customer.dto.CustomerContactResponse;
 import com.nicko.customer.dto.PageResponse;

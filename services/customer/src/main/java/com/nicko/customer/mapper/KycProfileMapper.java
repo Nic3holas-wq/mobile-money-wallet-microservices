@@ -1,6 +1,6 @@
 package com.nicko.customer.mapper;
 
-import com.nicko.customer.customer.KycProfile;
+import com.nicko.customer.entity.KycProfile;
 import com.nicko.customer.dto.KycProfileResponse;
 import com.nicko.customer.dto.KycProfileRequest;
 import org.springframework.stereotype.Component;

@@ -1,7 +1,7 @@
 package com.nicko.customer.service;
 
-import com.nicko.customer.customer.*;
-import com.nicko.customer.customer.enums.VerificationSource;
+import com.nicko.customer.entity.*;
+import com.nicko.customer.entity.enums.VerificationSource;
 import com.nicko.customer.dto.*;
 import com.nicko.customer.mapper.CustomerContactMapper;
 import com.nicko.customer.repository.*;

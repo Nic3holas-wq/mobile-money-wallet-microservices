@@ -1,6 +1,6 @@
 package com.nicko.customer.service;
 
-import com.nicko.customer.customer.enums.ContactType;
+import com.nicko.customer.entity.enums.ContactType;
 import java.util.UUID;
 
 public interface VerificationDelivery {

@@ -1,8 +1,8 @@
 package com.nicko.customer.service;
 
-import com.nicko.customer.customer.Customer;
-import com.nicko.customer.customer.OutboxEvent;
-import com.nicko.customer.customer.enums.OutboxStatus;
+import com.nicko.customer.entity.Customer;
+import com.nicko.customer.entity.OutboxEvent;
+import com.nicko.customer.entity.enums.OutboxStatus;
 import com.nicko.customer.dto.*;
 import com.nicko.customer.mapper.OutboxEventMapper;
 import com.nicko.customer.repository.OutboxEventRepository;

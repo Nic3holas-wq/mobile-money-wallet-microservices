@@ -1,3 +1,3 @@
 package com.nicko.customer.dto;
-import com.nicko.customer.customer.enums.ConsentType;
+import com.nicko.customer.entity.enums.ConsentType;
 public record ConsentPolicyResponse(ConsentType consentType, String documentVersion, boolean mandatory) {}

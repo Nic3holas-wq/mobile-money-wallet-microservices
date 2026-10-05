@@ -1,6 +1,6 @@
 package com.nicko.customer.mapper;
 
-import com.nicko.customer.customer.OutboxEvent;
+import com.nicko.customer.entity.OutboxEvent;
 import com.nicko.customer.dto.OutboxEventResponse;
 import org.springframework.stereotype.Component;
 

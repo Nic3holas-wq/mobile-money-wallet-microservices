@@ -1,6 +1,6 @@
 package com.nicko.customer.repository;
 
-import com.nicko.customer.customer.ContactVerificationChallenge;
+import com.nicko.customer.entity.ContactVerificationChallenge;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.Instant;
 import java.util.List;

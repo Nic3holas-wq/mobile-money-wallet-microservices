@@ -1,6 +1,6 @@
 package com.nicko.customer.service;
 
-import com.nicko.customer.customer.*;
+import com.nicko.customer.entity.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

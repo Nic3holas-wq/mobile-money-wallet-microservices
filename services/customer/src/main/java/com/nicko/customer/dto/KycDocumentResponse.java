@@ -1,6 +1,6 @@
 package com.nicko.customer.dto;
 
-import com.nicko.customer.customer.enums.*;
+import com.nicko.customer.entity.enums.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;

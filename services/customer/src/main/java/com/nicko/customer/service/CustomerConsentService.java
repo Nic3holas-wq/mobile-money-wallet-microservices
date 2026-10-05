@@ -1,6 +1,6 @@
 package com.nicko.customer.service;
 
-import com.nicko.customer.customer.CustomerConsent;
+import com.nicko.customer.entity.CustomerConsent;
 import com.nicko.customer.dto.*;
 import com.nicko.customer.mapper.CustomerConsentMapper;
 import com.nicko.customer.repository.CustomerConsentRepository;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.net.InetAddress;
-import java.time.Instant;
 import java.util.UUID;
 
 @Service
@@ -64,7 +63,7 @@ public class CustomerConsentService {
         var consent = find(customer.getId(), id);
         if (consent.getWithdrawnAt() == null) {
             consent.setWithdrawnAt(clock.instant());
-            if (consent.getConsentType() != com.nicko.customer.customer.enums.ConsentType.MARKETING) {
+            if (consent.getConsentType() != com.nicko.customer.entity.enums.ConsentType.MARKETING) {
                 customer.setWalletEligible(false);
             }
             audit.record(customer.getId(), userId, "CONSENT_WITHDRAWN", "CUSTOMER_CONSENT", consent.getId(),

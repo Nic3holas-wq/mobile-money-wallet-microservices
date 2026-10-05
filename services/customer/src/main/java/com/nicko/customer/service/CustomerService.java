@@ -1,9 +1,9 @@
 package com.nicko.customer.service;
 
-import com.nicko.customer.customer.Customer;
-import com.nicko.customer.customer.enums.CustomerStatus;
-import com.nicko.customer.customer.enums.KycStatus;
-import com.nicko.customer.customer.enums.KycTier;
+import com.nicko.customer.entity.Customer;
+import com.nicko.customer.entity.enums.CustomerStatus;
+import com.nicko.customer.entity.enums.KycStatus;
+import com.nicko.customer.entity.enums.KycTier;
 import com.nicko.customer.dto.CustomerResponse;
 import com.nicko.customer.dto.RegisterCustomerRequest;
 import com.nicko.customer.repository.CustomerRepository;

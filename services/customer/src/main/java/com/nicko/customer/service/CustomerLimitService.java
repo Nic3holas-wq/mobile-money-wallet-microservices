@@ -1,6 +1,6 @@
 package com.nicko.customer.service;
 
-import com.nicko.customer.customer.CustomerLimit;
+import com.nicko.customer.entity.CustomerLimit;
 import com.nicko.customer.dto.*;
 import com.nicko.customer.mapper.CustomerLimitMapper;
 import com.nicko.customer.repository.CustomerLimitRepository;

@@ -1,6 +1,6 @@
 package com.nicko.customer.service;
 
-import com.nicko.customer.customer.enums.ConsentType;
+import com.nicko.customer.entity.enums.ConsentType;
 import com.nicko.customer.dto.*;
 import com.nicko.customer.repository.CustomerConsentRepository;
 import org.springframework.beans.factory.annotation.Value;

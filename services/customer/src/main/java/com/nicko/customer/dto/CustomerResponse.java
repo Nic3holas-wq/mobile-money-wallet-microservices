@@ -1,8 +1,8 @@
 package com.nicko.customer.dto;
 
-import com.nicko.customer.customer.enums.CustomerStatus;
-import com.nicko.customer.customer.enums.KycStatus;
-import com.nicko.customer.customer.enums.KycTier;
+import com.nicko.customer.entity.enums.CustomerStatus;
+import com.nicko.customer.entity.enums.KycStatus;
+import com.nicko.customer.entity.enums.KycTier;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;

@@ -1,6 +1,6 @@
 package com.nicko.customer.repository;
 
-import com.nicko.customer.customer.CustomerAuditRecord;
+import com.nicko.customer.entity.CustomerAuditRecord;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.Repository;

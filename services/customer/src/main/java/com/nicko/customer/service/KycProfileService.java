@@ -1,7 +1,7 @@
 package com.nicko.customer.service;
 
-import com.nicko.customer.customer.KycProfile;
-import com.nicko.customer.customer.enums.*;
+import com.nicko.customer.entity.KycProfile;
+import com.nicko.customer.entity.enums.*;
 import com.nicko.customer.dto.*;
 import com.nicko.customer.mapper.KycProfileMapper;
 import com.nicko.customer.repository.KycProfileRepository;

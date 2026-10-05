@@ -1,6 +1,6 @@
 package com.nicko.customer.service;
 
-import com.nicko.customer.customer.CustomerAuditRecord;
+import com.nicko.customer.entity.CustomerAuditRecord;
 import com.nicko.customer.dto.*;
 import com.nicko.customer.repository.CustomerAuditRepository;
 import jakarta.persistence.EntityManager;

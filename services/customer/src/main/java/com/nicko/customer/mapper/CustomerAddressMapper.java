@@ -1,6 +1,6 @@
 package com.nicko.customer.mapper;
 
-import com.nicko.customer.customer.CustomerAddress;
+import com.nicko.customer.entity.CustomerAddress;
 import com.nicko.customer.dto.CustomerAddressRequest;
 import com.nicko.customer.dto.CustomerAddressResponse;
 import org.springframework.stereotype.Component;

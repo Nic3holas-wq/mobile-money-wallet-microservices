@@ -1,6 +1,6 @@
 package com.nicko.customer.mapper;
 
-import com.nicko.customer.customer.KycDocument;
+import com.nicko.customer.entity.KycDocument;
 import com.nicko.customer.dto.KycDocumentResponse;
 import com.nicko.customer.dto.KycDocumentRequest;
 import org.springframework.stereotype.Component;

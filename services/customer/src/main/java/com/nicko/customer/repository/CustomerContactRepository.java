@@ -1,8 +1,8 @@
 package com.nicko.customer.repository;
 
 import java.util.List;
-import com.nicko.customer.customer.enums.ContactType;
-import com.nicko.customer.customer.CustomerContact;
+import com.nicko.customer.entity.enums.ContactType;
+import com.nicko.customer.entity.CustomerContact;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

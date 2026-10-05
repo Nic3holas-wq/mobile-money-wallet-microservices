@@ -1,6 +1,6 @@
 package com.nicko.customer.config;
 
-import com.nicko.customer.customer.enums.ContactType;
+import com.nicko.customer.entity.enums.ContactType;
 import com.nicko.customer.service.LocalVerificationDelivery;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;

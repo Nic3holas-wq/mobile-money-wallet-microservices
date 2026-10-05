@@ -1,7 +1,7 @@
 package com.nicko.customer.repository;
 
 import java.util.List;
-import com.nicko.customer.customer.CustomerAddress;
+import com.nicko.customer.entity.CustomerAddress;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
