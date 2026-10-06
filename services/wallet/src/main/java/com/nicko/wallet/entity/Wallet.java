@@ -34,8 +34,6 @@ public class Wallet {
     @Column(name = "public_id", nullable = false, unique = true)
     private UUID publicId = UUID.randomUUID();
 
-    @NotNull
-    @Column(name = "customer_id", nullable = false, updatable = false)
     private UUID customerId;
 
     @NotNull
