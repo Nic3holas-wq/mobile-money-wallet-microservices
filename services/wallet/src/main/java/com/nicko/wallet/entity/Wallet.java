@@ -23,9 +23,21 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 
+@Entity
+@Table(name = "wallet", indexes = {
+        @Index(name = "idx_wallet_customer_id",
+                columnList = "customer_id",
+                unique = true),
+        @Index(name = "idx_wallet_public_id",
+                columnList = "public_id",
+                unique = true)
+})
+@Getter
+@Setter
+@NoArgsConstructor
 public class Wallet {
+
     @Id
-    @NotNull
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
@@ -34,21 +46,31 @@ public class Wallet {
     @Column(name = "public_id", nullable = false, unique = true)
     private UUID publicId = UUID.randomUUID();
 
+    @NotNull
+    @Column(name = "customer_id", nullable = false, updatable = false)
     private UUID customerId;
 
     @NotNull
     @Size(max = 20)
-    @Column(name = "wallet_number", nullable = false, updatable = false, unique = true)
+    @Column(name = "wallet_number",
+            nullable = false,
+            updatable = false,
+            unique = true)
     private String walletNumber;
 
     @NotNull
     @ColumnDefault("'KES'")
-    @Column(name = "currency", updatable = false, nullable = false)
+    @Column(name = "currency",
+            nullable = false,
+            updatable = false)
     private String currency;
 
     @NotNull
     @ColumnDefault("0.0000")
-    @Column(name = "balance", nullable = false, precision = 19, scale = 4)
+    @Column(name = "balance",
+            nullable = false,
+            precision = 19,
+            scale = 4)
     private BigDecimal balance;
 
     @NotNull
@@ -58,11 +80,24 @@ public class Wallet {
     private Long version;
 
     @NotNull
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at",
+            nullable = false,
+            updatable = false)
     private Instant createdAt;
 
-    @ColumnDefault("now()")
+    @NotNull
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
+    @PrePersist
+    protected void onCreate() {
+        Instant now = Instant.now();
+        createdAt = now;
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = Instant.now();
+    }
 }
