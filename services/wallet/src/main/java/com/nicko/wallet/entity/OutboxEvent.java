@@ -35,9 +35,7 @@ public class OutboxEvent {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+    private UUID customerId;
 
     @Column(name = "aggregate_type", nullable = false)
     private String aggregateType;

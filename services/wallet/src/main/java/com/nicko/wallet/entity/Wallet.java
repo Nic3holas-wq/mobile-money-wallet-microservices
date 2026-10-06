@@ -48,14 +48,14 @@ public class Wallet {
 
     @NotNull
     @ColumnDefault("0.0000")
-    @Column(name = "balance", nullable = false, updatable = false, precision = 19, scale = 4)
+    @Column(name = "balance", nullable = false, precision = 19, scale = 4)
     private BigDecimal balance;
 
     @NotNull
     @Version
     @ColumnDefault("0")
-    @Column(name = "version", nullable = false, updatable = false)
-    private BigInteger version;
+    @Column(name = "version", nullable = false)
+    private Long version;
 
     @NotNull
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -63,6 +63,6 @@ public class Wallet {
 
     @ColumnDefault("now()")
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
 }

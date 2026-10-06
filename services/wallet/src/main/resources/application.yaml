@@ -1,8 +1,10 @@
 spring:
   application:
-    name: wallet
+    name: wallet-service
 
   cloud:
+    config:
+      enabled: false
     openfeign:
       circuitbreaker:
         enabled: true
@@ -12,6 +14,128 @@ spring:
             connect-timeout: 2000
             read-timeout: 3000
             logger-level: basic
+
+  datasource:
+    url: jdbc:postgresql://${WALLET_DB_HOST:postgresql}:${WALLET_DB_PORT:5432}/${WALLET_DB_NAME:wallet_db}
+    username: ${WALLET_DB_USERNAME:nicko}
+    password: ${WALLET_DB_PASSWORD:nicko}
+    driver-class-name: org.postgresql.Driver
+
+    hikari:
+      pool-name: wallet-service-pool
+      maximum-pool-size: ${WALLET_DB_POOL_SIZE:10}
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    open-in-view: false
+    show-sql: false
+
+    hibernate:
+      ddl-auto: validate
+
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    validate-on-migrate: true
+    clean-disabled: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          audiences: ${WALLET_JWT_AUDIENCE:wallet-service}
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9091/realms/mobile-money-wallet}
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://keycloak:8080/realms/mobile-money-wallet/protocol/openid-connect/certs}
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:29092}
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      properties:
+        enable.idempotence: true
+
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP:wallet-service}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        spring.json.trusted.packages: "com.nicko.customer.event,com.nicko.wallet.event"
+
+  web:
+    error:
+      include-message: never
+      include-binding-errors: never
+      include-stacktrace: never
+
+server:
+  port: ${SERVER_PORT:8082}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLING_PROBABILITY:1.0}
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans
+
+logging:
+  pattern:
+    level: "%5p [traceId:%X{traceId:-}] [requestId:%X{requestId:-none}]"
+
+  level:
+    root: INFO
+    com.nicko.wallet: ${WALLET_LOG_LEVEL:INFO}
+    org.springframework.security: INFO
+    org.hibernate.SQL: INFO
+
 clients:
   customer:
-    url: https://localhost:8081
+    url: ${CLIENTS_CUSTOMER_URL:http://customer-service:8081}
+
+app:
+  security:
+    admin-role: ${WALLET_ADMIN_ROLE:wallet-admin}
+
+  wallet:
+    default-currency: ${WALLET_DEFAULT_CURRENCY:KES}
+
+  stepup:
+    hmac-key: ${WALLET_STEPUP_HMAC_KEY:}
+    otp-length: 6
+    otp-ttl: ${WALLET_STEPUP_OTP_TTL:PT5M}
+    max-attempts: ${WALLET_STEPUP_MAX_ATTEMPTS:3}
+    max-resends: ${WALLET_STEPUP_MAX_RESENDS:3}
+
+  kafka:
+    enabled: ${KAFKA_ENABLED:true}
+
+    topics:
+      wallet-created: wallet.created.v1
+      transfer-completed: wallet.transfer.completed.v1
+      transfer-failed: wallet.transfer.failed.v1
