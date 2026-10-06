@@ -1,7 +1,10 @@
 package com.nicko.customer.service;
 
 import com.nicko.customer.entity.OutboxEvent;
+import com.nicko.customer.entity.Customer;
+import com.nicko.customer.entity.enums.CustomerStatus;
 import com.nicko.customer.entity.enums.OutboxStatus;
+import com.nicko.customer.repository.CustomerRepository;
 import com.nicko.customer.repository.OutboxEventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,14 +25,23 @@ public class WalletCreationOutboxPublisher {
     private static final String EVENT_TYPE = "customer.wallet.creation.requested.v1";
 
     private final OutboxEventRepository outboxEventRepository;
+    private final CustomerRepository customerRepository;
+    private final OutboxEventService outboxEventService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Value("${app.kafka.topics.wallet-creation-requested}")
     private String topic;
 
+    private boolean backfillCompleted;
+
     @Scheduled(fixedDelayString = "${app.kafka.outbox-poll-interval:PT1S}")
     @Transactional
     public void publishPendingWalletCreationRequests() {
+        if (!backfillCompleted) {
+            backfillMissingWalletCreationRequests();
+            backfillCompleted = true;
+        }
+
         var events = outboxEventRepository.findTop100ByEventTypeAndStatusOrderByCreatedAtAsc(
                 EVENT_TYPE, OutboxStatus.PENDING);
 
@@ -44,6 +56,15 @@ public class WalletCreationOutboxPublisher {
                 event.setAttemptCount(event.getAttemptCount() + 1);
                 event.setLastError(exception.getMessage());
                 log.error("Failed to publish wallet creation request outbox event {}", event.getId(), exception);
+            }
+        }
+    }
+
+    private void backfillMissingWalletCreationRequests() {
+        for (Customer customer : customerRepository.findAllByCustomerStatusAndWalletEligibleTrue(CustomerStatus.ACTIVE)) {
+            if (!outboxEventRepository.existsByEventTypeAndAggregateId(EVENT_TYPE, customer.getId())) {
+                outboxEventService.record(customer, EVENT_TYPE, "CUSTOMER", customer.getId(),
+                        java.util.Map.of("currency", "KES"));
             }
         }
     }

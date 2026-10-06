@@ -1,6 +1,5 @@
 package com.nicko.wallet.event;
 
-import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
@@ -12,7 +11,7 @@ public record CustomerWalletCreationRequestedEvent(
 
         Integer schemaVersion,
 
-        Instant occurredAt,
+        String occurredAt,
 
         UUID customerId,
 

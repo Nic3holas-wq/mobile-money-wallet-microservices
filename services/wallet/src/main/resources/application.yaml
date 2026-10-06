@@ -44,6 +44,7 @@ spring:
 
   flyway:
     enabled: true
+    baseline-on-migrate: true
     locations: classpath:db/migration
     validate-on-migrate: true
     clean-disabled: true
@@ -75,6 +76,7 @@ spring:
       properties:
         spring.json.trusted.packages: "com.nicko.customer.event,com.nicko.wallet.event"
         spring.json.use.type.headers: false
+        spring.json.value.default.type: com.nicko.wallet.event.CustomerWalletCreationRequestedEvent
 
   web:
     error:
