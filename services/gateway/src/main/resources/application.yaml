@@ -69,6 +69,49 @@ spring:
                     name: customer-service
                     fallbackUri: forward:/fallback/customer-service
                     statusCodes: 502,503,504
+            # Wallet docs: gateway /wallet-service/v3/api-docs -> wallet-service /v3/api-docs
+            - id: wallet-service-docs
+              uri: http://wallet-service:8082
+              predicates:
+                - Path=/wallet-service/v3/api-docs/**
+              metadata:
+                connect-timeout: 2000
+                response-timeout: 5000
+              filters:
+                - StripPrefix=1
+
+            # Money-moving operations: stricter rate limit, no retries
+            - id: wallet-service-transfers
+              uri: http://wallet-service:8082
+              predicates:
+                - Path=/api/v1/wallets/*/transfers/**,/api/v1/transfers/**
+              metadata:
+                response-timeout: 15000
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    redis-rate-limiter.replenishRate: 1
+                    redis-rate-limiter.burstCapacity: 5
+                    redis-rate-limiter.requestedTokens: 1
+
+            # General wallet API
+            - id: wallet-service
+              uri: http://wallet-service:8082
+              predicates:
+                - Path=/api/v1/wallets/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    redis-rate-limiter.replenishRate: 2
+                    redis-rate-limiter.burstCapacity: 20
+                    redis-rate-limiter.requestedTokens: 1
+                - name: CircuitBreaker
+                  args:
+                    name: wallet-service
+                    fallbackUri: forward:/fallback/wallet-service
+                    statusCodes: 502,503,504
 
   security:
     oauth2:
@@ -83,13 +126,15 @@ app:
     admin-role: ${CUSTOMER_ADMIN_ROLE:customer-admin}
     issuer-uri: ${GATEWAY_ISSUER_URI:http://localhost:9091/realms/mobile-money-wallet}
     jwk-set-uri: ${GATEWAY_JWK_SET_URI:http://keycloak:8080/realms/mobile-money-wallet/protocol/openid-connect/certs}
-    allowed-audiences: ${GATEWAY_ALLOWED_AUDIENCES:customer-service}
+    allowed-audiences: ${GATEWAY_ALLOWED_AUDIENCES:customer-service, wallet-service}
 
 springdoc:
   swagger-ui:
     urls:
       - name: customer-service
         url: /customer-service/v3/api-docs
+      - name: wallet-service
+        url: /wallet-service/v3/api-docs
 
 management:
   endpoints:

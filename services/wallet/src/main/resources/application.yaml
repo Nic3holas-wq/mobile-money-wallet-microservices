@@ -1,3 +1,17 @@
 spring:
   application:
     name: wallet
+
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+      client:
+        config:
+          customer-service:
+            connect-timeout: 2000
+            read-timeout: 3000
+            logger-level: basic
+clients:
+  customer:
+    url: https://localhost:8081

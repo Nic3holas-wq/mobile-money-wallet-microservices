@@ -51,6 +51,46 @@ services:
 
     restart: unless-stopped
 
+  wallet-service:
+    container_name: wallet-service
+    build:
+      context: ./wallet
+      dockerfile: Dockerfile
+    environment:
+      SERVER_PORT: 8082
+
+      WALLET_DB_HOST: postgresql
+      WALLET_DB_PORT: 5432
+      WALLET_DB_NAME: wallet_db
+      WALLET_DB_USERNAME: nicko
+      WALLET_DB_PASSWORD: nicko
+
+      KEYCLOAK_ISSUER_URI: https://localhost:8443/realms/mobile-money-wallet
+      KEYCLOAK_JWK_SET_URI: http://keycloak:8080/realms/mobile-money-wallet/protocol/openid-connect/certs
+      WALLET_JWT_AUDIENCE: wallet-service
+
+      # Feign client -> customer service (container DNS, internal port)
+      CLIENTS_CUSTOMER_URL: http://customer-service:8081
+
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_CONSUMER_GROUP: wallet-service
+      KAFKA_ENABLED: "true"
+
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+      kafka:
+        condition: service_started
+      customer-service:
+        condition: service_started
+
+    networks:
+      - microservices-net
+
+    restart: unless-stopped
+
   gateway:
     container_name: api-gateway
     build:
