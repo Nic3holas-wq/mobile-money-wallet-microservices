@@ -23,18 +23,6 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 
-@Entity
-@Table(name = "wallet", indexes = {
-        @Index(name = "idx_wallet_customer_id",
-                columnList = "customer_id",
-                unique = true),
-        @Index(name = "idx_wallet_public_id",
-                columnList = "public_id",
-                unique = true)
-})
-@Getter
-@Setter
-@NoArgsConstructor
 public class Wallet {
 
     @Id

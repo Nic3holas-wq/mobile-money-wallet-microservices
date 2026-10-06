@@ -104,6 +104,8 @@ public class CustomerService {
                 java.util.Map.of("status", "ACTIVE", "walletEligible", true, "kycTier", customer.getKycTier().name()));
         outbox.record(customer, "customer.activated.v1", "CUSTOMER", customer.getId(),
                 java.util.Map.of("status", "ACTIVE", "kycTier", customer.getKycTier().name()));
+        outbox.record(customer, "customer.wallet.creation.requested.v1", "CUSTOMER", customer.getId(),
+                java.util.Map.of("currency", "KES"));
         return mapper.toResponse(customer);
     }
 }

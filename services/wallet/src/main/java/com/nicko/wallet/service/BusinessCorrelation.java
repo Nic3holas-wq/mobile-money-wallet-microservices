@@ -64,4 +64,12 @@ public class BusinessCorrelation {
 
         return id;
     }
+
+    public static void set(UUID correlationId) {
+        TransactionSynchronizationManager.bindResource(KEY, correlationId);
+    }
+
+    public static void clear() {
+        TransactionSynchronizationManager.unbindResourceIfPossible(KEY);
+    }
 }

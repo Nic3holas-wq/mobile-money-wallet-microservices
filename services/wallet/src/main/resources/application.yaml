@@ -74,6 +74,7 @@ spring:
       enable-auto-commit: false
       properties:
         spring.json.trusted.packages: "com.nicko.customer.event,com.nicko.wallet.event"
+        spring.json.use.type.headers: false
 
   web:
     error:

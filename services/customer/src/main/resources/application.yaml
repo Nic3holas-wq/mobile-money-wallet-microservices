@@ -125,6 +125,7 @@ app:
     topics:
       customer-registered: customer.registered.v1
       customer-activated: customer.activated.v1
+      wallet-creation-requested: customer.wallet.creation.requested.v1
       customer-suspended: customer.suspended.v1
       kyc-submitted: customer.kyc.submitted.v1
       kyc-verified: customer.kyc.verified.v1
