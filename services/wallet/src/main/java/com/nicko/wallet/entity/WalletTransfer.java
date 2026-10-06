@@ -78,6 +78,10 @@ public class WalletTransfer {
     @Column(name = "completed_at")
     private Instant completedAt;
 
+    @NotNull
+    @Column(name = "expires_at", nullable = false)
+    private Instant expiresAt;
+
     @Version
     @Column(name = "version", nullable = false)
     private Long version;

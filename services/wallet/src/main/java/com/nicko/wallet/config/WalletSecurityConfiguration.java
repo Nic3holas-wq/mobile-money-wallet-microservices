@@ -20,6 +20,7 @@ public class WalletSecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info").permitAll()
                         .requestMatchers("/internal/v1/wallets/**").hasAuthority("PAYMENT_SERVICE")
+                        .requestMatchers("/api/v1/wallets/*/transfers/**", "/api/v1/wallets/*/pin").authenticated()
                         .anyRequest().denyAll())
                 .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(converter)))
                 .build();

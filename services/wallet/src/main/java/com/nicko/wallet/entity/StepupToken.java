@@ -65,6 +65,9 @@ public class StepupToken {
     @Column(name = "consumed_at")
     private Instant consumedAt;
 
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt = Instant.now();
+
     @NotNull
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();

@@ -2,6 +2,7 @@ package com.nicko.wallet.service;
 
 import com.nicko.wallet.entity.OutboxEvent;
 import com.nicko.wallet.entity.Wallet;
+import com.nicko.wallet.entity.WalletTransfer;
 import com.nicko.wallet.entity.enums.OutboxStatus;
 import com.nicko.wallet.event.WalletEventTypes;
 import com.nicko.wallet.repository.OutboxEventRepository;
@@ -65,5 +66,47 @@ public class WalletOutboxEventService {
                         )
                 )
         );
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void recordWalletTransferCompleted(WalletTransfer transfer) {
+        recordWalletTransfer(transfer, WalletEventTypes.WALLET_TRANSFER_COMPLETED);
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void recordWalletTransferFailed(WalletTransfer transfer) {
+        recordWalletTransfer(transfer, WalletEventTypes.WALLET_TRANSFER_FAILED);
+    }
+
+    private void recordWalletTransfer(WalletTransfer transfer, String eventType) {
+        var event = new OutboxEvent();
+        event.setCustomerId(transfer.getSourceWallet().getCustomerId());
+        event.setAggregateType("WALLET_TRANSFER");
+        event.setAggregateId(transfer.getId());
+        event.setEventType(eventType);
+        event.setCorrelationId(BusinessCorrelation.current());
+        event.setStatus(OutboxStatus.PENDING);
+        event.setAttemptCount(0);
+        event.setPayload(Map.of());
+        repository.save(event);
+        event.setPayload(Map.of(
+                "eventId", event.getId().toString(),
+                "eventType", eventType,
+                "schemaVersion", 1,
+                "occurredAt", Instant.now().toString(),
+                "customerId", transfer.getSourceWallet().getCustomerId().toString(),
+                "correlationId", event.getCorrelationId().toString(),
+                "data", Map.of(
+                        "transferId", transfer.getId().toString(),
+                        "reference", transfer.getReference(),
+                        "sourceWalletId", transfer.getSourceWallet().getPublicId().toString(),
+                        "destinationWalletId", transfer.getDestinationWallet().getPublicId().toString(),
+                        "sourceCustomerId", transfer.getSourceWallet().getCustomerId().toString(),
+                        "destinationCustomerId", transfer.getDestinationWallet().getCustomerId().toString(),
+                        "amount", transfer.getAmount(),
+                        "currency", transfer.getCurrency(),
+                        "status", transfer.getStatus().name()
+                )
+        ));
     }
 }

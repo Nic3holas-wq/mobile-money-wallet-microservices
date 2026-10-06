@@ -16,4 +16,7 @@ public interface CustomerClient {
 
     @GetMapping("/internal/customers/{id}")
     CustomerDto getCustomer(@PathVariable("id") UUID id);
+
+    @GetMapping("/api/v1/customers/me")
+    CustomerDto getCurrentCustomer();
 }

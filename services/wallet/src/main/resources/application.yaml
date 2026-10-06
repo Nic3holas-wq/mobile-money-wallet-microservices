@@ -131,13 +131,13 @@ app:
 
   stepup:
     hmac-key: ${WALLET_STEPUP_HMAC_KEY:}
-    otp-length: 6
-    otp-ttl: ${WALLET_STEPUP_OTP_TTL:PT5M}
+    transfer-ttl: ${WALLET_TRANSFER_STEPUP_TTL:PT15M}
+    pin-lock-duration: ${WALLET_PIN_LOCK_DURATION:PT15M}
     max-attempts: ${WALLET_STEPUP_MAX_ATTEMPTS:3}
-    max-resends: ${WALLET_STEPUP_MAX_RESENDS:3}
 
   kafka:
     enabled: ${KAFKA_ENABLED:true}
+    outbox-poll-interval: ${WALLET_OUTBOX_POLL_INTERVAL:PT1S}
 
     topics:
       wallet-created: wallet.created.v1
