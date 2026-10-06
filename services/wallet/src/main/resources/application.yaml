@@ -124,6 +124,7 @@ clients:
 app:
   security:
     admin-role: ${WALLET_ADMIN_ROLE:wallet-admin}
+    payment-role: ${WALLET_PAYMENT_ROLE:payment-service}
 
   wallet:
     default-currency: ${WALLET_DEFAULT_CURRENCY:KES}

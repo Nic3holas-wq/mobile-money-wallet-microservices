@@ -1,4 +1,4 @@
-package com.verapay.wallet.model.enums;
+package com.nicko.wallet.entity.enums;
 
 /**
  * The core of double-entry bookkeeping: every WalletLedgerEntry is either

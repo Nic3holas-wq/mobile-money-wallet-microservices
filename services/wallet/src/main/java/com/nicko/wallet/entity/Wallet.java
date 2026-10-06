@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import com.nicko.wallet.entity.enums.WalletStatus;
 
 @Entity
 @Table(name = "wallet", indexes = {
@@ -60,6 +61,15 @@ public class Wallet {
             precision = 19,
             scale = 4)
     private BigDecimal balance;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
+    private WalletStatus status = WalletStatus.ACTIVE;
+
+    @NotNull
+    @Column(name = "reserved_balance", nullable = false, precision = 19, scale = 4)
+    private BigDecimal reservedBalance = BigDecimal.ZERO;
 
     @NotNull
     @Version

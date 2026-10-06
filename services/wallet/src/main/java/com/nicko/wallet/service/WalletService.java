@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+import com.nicko.wallet.entity.enums.WalletStatus;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +37,8 @@ public class WalletService {
         wallet.setWalletNumber(walletNumberGenerator.generate());
         wallet.setCurrency(extractCurrency(event));
         wallet.setBalance(BigDecimal.ZERO);
+        wallet.setReservedBalance(BigDecimal.ZERO);
+        wallet.setStatus(WalletStatus.ACTIVE);
 
         Wallet savedWallet = walletRepository.save(wallet);
 

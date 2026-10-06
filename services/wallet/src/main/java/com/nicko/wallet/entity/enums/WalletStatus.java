@@ -1,4 +1,4 @@
-package com.verapay.wallet.model.enums;
+package com.nicko.wallet.entity.enums;
 
 public enum WalletStatus {
     ACTIVE,

@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Immutable;
+import com.nicko.wallet.entity.enums.LedgerDirection;
+import com.nicko.wallet.entity.enums.LedgerEntryType;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -26,8 +28,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class WalletLedgerEntry {
 
-    public enum Direction { DEBIT, CREDIT }
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, updatable = false)
@@ -38,19 +38,23 @@ public class WalletLedgerEntry {
     @JoinColumn(name = "wallet_id", nullable = false, updatable = false)
     private Wallet wallet;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "transfer_id", nullable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "transfer_id", updatable = false)
     private WalletTransfer walletTransfer;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_operation_id", updatable = false)
+    private WalletPaymentOperation paymentOperation;
+
     @NotNull
-    @Column(name = "entry_type", nullable = false, updatable = false, length = 10)
-    private String entryType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "entry_type", nullable = false, updatable = false, length = 20)
+    private LedgerEntryType entryType;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "direction", nullable = false, updatable = false, length = 6)
-    private Direction direction;
+    private LedgerDirection direction;
 
     @NotNull
     @Column(name = "amount", nullable = false, updatable = false, precision = 19, scale = 4)
