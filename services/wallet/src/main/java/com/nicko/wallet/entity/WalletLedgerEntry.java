@@ -11,7 +11,11 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name= "wallet_ledger_entry")
+@Table(name= "wallet_ledger_entry", indexes = {
+        @Index(name = "idx_wallet_ledger_entry_wallet_id", columnList = "wallet_id", unique = true),
+        @Index(name = "idx_wallet_ledger_entry_transfer_id", columnList = "transfer_id", unique = true),
+        @Index(name = "idx_wallet_ledger_entry_created_at", columnList = "created_at", unique = true)
+})
 @Getter
 @Setter
 @NoArgsConstructor
