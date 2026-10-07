@@ -19,6 +19,7 @@ public class WalletSecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/internal/v1/wallets/**").hasAuthority("PAYMENT_SERVICE")
                         .requestMatchers("/api/v1/wallets/*/transfers/**", "/api/v1/wallets/*/pin").authenticated()
                         .anyRequest().denyAll())
