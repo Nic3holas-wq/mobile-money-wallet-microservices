@@ -5,7 +5,37 @@ Keycloak's `mobile-money-wallet` realm for real access tokens. Start with
 `./mvnw spring-boot:run`; the default HTTP port is 8081. Flyway applies migrations
 and Hibernate validates the schema at startup.
 
-## Register the authenticated customer
+## Create a login account
+
+`POST /api/v1/auth/register` creates a Keycloak account and does not require a
+bearer token. Example request:
+
+```json
+{
+  "username": "jane.doe",
+  "email": "jane@example.com",
+  "password": "A-long-password-123",
+  "firstName": "Jane",
+  "lastName": "Doe"
+}
+```
+
+Passwords must be 12–128 characters. A successful request returns `201` with
+the Keycloak user ID. Duplicate username/email returns `409`. The endpoint does
+not accept roles or privileges from the caller. After account creation, obtain
+an access token through the normal Keycloak login flow, then register the
+customer profile below with that token.
+
+The service uses the `wallet-registration-service` Keycloak client through
+client credentials. In the `mobile-money-wallet` realm, create a confidential
+client with **Service accounts roles** enabled. Assign its service account the
+`manage-users` client role from `realm-management`. Configure its client ID and
+secret on the customer service with `KEYCLOAK_REGISTRATION_CLIENT_ID` and
+`KEYCLOAK_REGISTRATION_CLIENT_SECRET`; the base URL and realm can be set with
+`KEYCLOAK_BASE_URL` and `KEYCLOAK_REALM`. Keep the secret in an untracked `.env`
+or secret manager. Registration returns `503` until the secret is configured.
+
+## Register the authenticated customer profile
 
 API documentation is available at `http://localhost:8081/swagger-ui/index.html`
 after starting the service. The OpenAPI JSON is at `/v3/api-docs`.

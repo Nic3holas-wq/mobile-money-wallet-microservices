@@ -23,6 +23,7 @@ services:
       dockerfile: Dockerfile
     environment:
       SERVER_PORT: 8081
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-local}
 
       CUSTOMER_DB_HOST: postgresql
       CUSTOMER_DB_PORT: 5432
@@ -33,6 +34,15 @@ services:
       KEYCLOAK_ISSUER_URI: https://localhost:8443/realms/mobile-money-wallet
       KEYCLOAK_JWK_SET_URI: http://keycloak:8080/realms/mobile-money-wallet/protocol/openid-connect/certs
       CUSTOMER_JWT_AUDIENCE: customer-service
+      CUSTOMER_DOCUMENT_ENCRYPTION_KEY: ${CUSTOMER_DOCUMENT_ENCRYPTION_KEY:-}
+      CUSTOMER_DOCUMENT_HASH_KEY: ${CUSTOMER_DOCUMENT_HASH_KEY:-}
+      CUSTOMER_VERIFICATION_HMAC_KEY: ${CUSTOMER_VERIFICATION_HMAC_KEY:-}
+      SPRING_MAIL_HOST: mail-dev
+      SPRING_MAIL_PORT: 1025
+      KEYCLOAK_BASE_URL: http://keycloak:8080
+      KEYCLOAK_REALM: mobile-money-wallet
+      KEYCLOAK_REGISTRATION_CLIENT_ID: ${KEYCLOAK_REGISTRATION_CLIENT_ID:-wallet-registration-service}
+      KEYCLOAK_REGISTRATION_CLIENT_SECRET: ${KEYCLOAK_REGISTRATION_CLIENT_SECRET:-}
 
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       KAFKA_CONSUMER_GROUP: customer-service
@@ -44,6 +54,8 @@ services:
       keycloak:
         condition: service_started
       kafka:
+        condition: service_started
+      mail-dev:
         condition: service_started
 
     networks:
@@ -206,6 +218,8 @@ services:
     ports:
       - 1081:1080
       - 1026:1025
+    networks:
+      - microservices-net
 
   keycloak-postgres:
     container_name: keycloak-postgres-mw

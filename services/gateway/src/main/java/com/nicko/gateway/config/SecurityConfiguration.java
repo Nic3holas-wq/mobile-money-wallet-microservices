@@ -66,6 +66,7 @@ public class SecurityConfiguration {
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers("/actuator/health/**").permitAll()
                         .pathMatchers("/actuator/info").permitAll()
+                        .pathMatchers("/api/v1/auth/register").permitAll()
                         .pathMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",

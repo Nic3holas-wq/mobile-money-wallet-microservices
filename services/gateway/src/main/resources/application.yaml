@@ -24,10 +24,22 @@ spring:
             connect-timeout: 2000        # ms to open a connection
             response-timeout: 10s        # default max wait for a response
           routes:
+            - id: public-user-registration
+              uri: http://customer-service:8081
+              predicates:
+                - Path=/api/v1/auth/register
+                - Method=POST
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    redis-rate-limiter.replenishRate: 1
+                    redis-rate-limiter.burstCapacity: 5
+                    redis-rate-limiter.requestedTokens: 1
             - id: customer-kyc-upload
               uri: http://customer-service:8081
               predicates:
-                - Path=/api/v1/customers/me/kyc-profile/documents/
+                - Path=/api/v1/customers/me/kyc-profile/documents,/api/v1/customers/me/kyc-profile/documents/
                 - Method=POST
               metadata:
                 response-timeout: 30000

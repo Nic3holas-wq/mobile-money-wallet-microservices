@@ -112,6 +112,11 @@ logging:
     org.hibernate.SQL: INFO
 
 app:
+  keycloak:
+    base-url: ${KEYCLOAK_BASE_URL:http://keycloak:8080}
+    realm: ${KEYCLOAK_REALM:mobile-money-wallet}
+    registration-client-id: ${KEYCLOAK_REGISTRATION_CLIENT_ID:wallet-registration-service}
+    registration-client-secret: ${KEYCLOAK_REGISTRATION_CLIENT_SECRET:}
   security:
     admin-role: ${CUSTOMER_ADMIN_ROLE:customer-admin}
 
