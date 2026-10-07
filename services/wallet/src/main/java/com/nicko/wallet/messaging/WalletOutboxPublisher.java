@@ -33,13 +33,16 @@ public class WalletOutboxPublisher {
     @Value("${app.kafka.topics.transfer-failed}")
     private String transferFailedTopic;
 
+    @Value("${app.kafka.topics.transfer-reversed:wallet.transfer.reversed.v1}")
+    private String transferReversedTopic;
+
     @Scheduled(fixedDelayString = "${app.kafka.outbox-poll-interval:PT1S}")
     @Transactional
     public void publishPendingEvents() {
         for (OutboxEvent event : outboxEventRepository.findTop100ByStatusAndEventTypeInOrderByCreatedAtAsc(
                 OutboxStatus.PENDING,
                 List.of(WalletEventTypes.WALLET_CREATED, WalletEventTypes.WALLET_TRANSFER_COMPLETED,
-                        WalletEventTypes.WALLET_TRANSFER_FAILED))) {
+                        WalletEventTypes.WALLET_TRANSFER_FAILED, WalletEventTypes.WALLET_TRANSFER_REVERSED))) {
             String topic = topicFor(event.getEventType());
             if (topic == null) {
                 continue;
@@ -67,6 +70,9 @@ public class WalletOutboxPublisher {
         }
         if (WalletEventTypes.WALLET_TRANSFER_FAILED.equals(eventType)) {
             return transferFailedTopic;
+        }
+        if (WalletEventTypes.WALLET_TRANSFER_REVERSED.equals(eventType)) {
+            return transferReversedTopic;
         }
         return null;
     }

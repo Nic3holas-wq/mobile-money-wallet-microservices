@@ -78,6 +78,39 @@ public class WalletOutboxEventService {
         recordWalletTransfer(transfer, WalletEventTypes.WALLET_TRANSFER_FAILED);
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void recordWalletTransferReversed(WalletTransfer original, WalletTransfer reversal,
+                                             String adminSubject, String reason) {
+        var event = new OutboxEvent();
+        event.setCustomerId(original.getSourceWallet().getCustomerId());
+        event.setAggregateType("WALLET_TRANSFER");
+        event.setAggregateId(original.getId());
+        event.setEventType(WalletEventTypes.WALLET_TRANSFER_REVERSED);
+        event.setCorrelationId(BusinessCorrelation.current());
+        event.setStatus(OutboxStatus.PENDING);
+        event.setAttemptCount(0);
+        event.setPayload(Map.of());
+        repository.save(event);
+        event.setPayload(Map.of(
+                "eventId", event.getId().toString(),
+                "eventType", WalletEventTypes.WALLET_TRANSFER_REVERSED,
+                "schemaVersion", 1,
+                "occurredAt", Instant.now().toString(),
+                "customerId", original.getSourceWallet().getCustomerId().toString(),
+                "correlationId", event.getCorrelationId().toString(),
+                "data", Map.of(
+                        "originalTransferId", original.getId().toString(),
+                        "reversalTransferId", reversal.getId().toString(),
+                        "sourceWalletId", reversal.getSourceWallet().getPublicId().toString(),
+                        "destinationWalletId", reversal.getDestinationWallet().getPublicId().toString(),
+                        "amount", reversal.getAmount(),
+                        "currency", reversal.getCurrency(),
+                        "adminSubject", adminSubject,
+                        "reason", reason
+                )
+        ));
+    }
+
     private void recordWalletTransfer(WalletTransfer transfer, String eventType) {
         var event = new OutboxEvent();
         event.setCustomerId(transfer.getSourceWallet().getCustomerId());

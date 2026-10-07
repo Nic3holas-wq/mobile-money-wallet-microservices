@@ -84,7 +84,7 @@ spring:
             - id: wallet-service-transfers
               uri: http://wallet-service:8082
               predicates:
-                - Path=/api/v1/wallets/*/transfers/**,/api/v1/transfers/**
+                - Path=/api/v1/wallets/*/transfers/**,/api/v1/transfers/**, /api/v1/admin/transfers/**
               metadata:
                 response-timeout: 15000
               filters:

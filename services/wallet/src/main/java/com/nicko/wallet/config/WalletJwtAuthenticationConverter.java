@@ -18,10 +18,13 @@ import java.util.Map;
 public class WalletJwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
     private final String paymentRole;
+    private final String adminRole;
     private final JwtGrantedAuthoritiesConverter scopes = new JwtGrantedAuthoritiesConverter();
 
-    public WalletJwtAuthenticationConverter(@Value("${app.security.payment-role:payment-service}") String paymentRole) {
+    public WalletJwtAuthenticationConverter(@Value("${app.security.payment-role:payment-service}") String paymentRole,
+                                            @Value("${app.security.admin-role:ADMIN}") String adminRole) {
         this.paymentRole = paymentRole;
+        this.adminRole = adminRole;
     }
 
     @Override
@@ -31,6 +34,10 @@ public class WalletJwtAuthenticationConverter implements Converter<Jwt, Abstract
         if (realm instanceof Map<?, ?> access && access.get("roles") instanceof Collection<?> roles
                 && roles.contains(paymentRole)) {
             authorities.add(new SimpleGrantedAuthority("PAYMENT_SERVICE"));
+        }
+        if (realm instanceof Map<?, ?> access && access.get("roles") instanceof Collection<?> roles
+                && roles.contains(adminRole)) {
+            authorities.add(new SimpleGrantedAuthority("WALLET_ADMIN"));
         }
         return new JwtAuthenticationToken(jwt, authorities);
     }

@@ -123,7 +123,7 @@ clients:
 
 app:
   security:
-    admin-role: ${WALLET_ADMIN_ROLE:wallet-admin}
+    admin-role: ${WALLET_ADMIN_ROLE:ADMIN}
     payment-role: ${WALLET_PAYMENT_ROLE:payment-service}
 
   wallet:
@@ -143,3 +143,4 @@ app:
       wallet-created: wallet.created.v1
       transfer-completed: wallet.transfer.completed.v1
       transfer-failed: wallet.transfer.failed.v1
+      transfer-reversed: ${WALLET_TRANSFER_REVERSED_TOPIC:wallet.transfer.reversed.v1}
