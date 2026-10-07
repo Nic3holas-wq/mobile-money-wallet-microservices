@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.UUID;
 
@@ -25,21 +27,26 @@ public class WalletTransferController {
 
     @PostMapping
     public WalletTransferResponse transfer(@PathVariable UUID sourceWalletId,
+                                           @AuthenticationPrincipal Jwt jwt,
                                            @Valid @RequestBody WalletTransferRequest request) {
-        return walletTransferService.transfer(sourceWalletId, request);
+        return walletTransferService.transfer(sourceWalletId, "Bearer " + jwt.getTokenValue(), request);
     }
 
     @PostMapping("/{transferId}/stepup-token")
     public StepupTokenResponse acquireStepupToken(@PathVariable UUID sourceWalletId,
                                                   @PathVariable UUID transferId,
+                                                  @AuthenticationPrincipal Jwt jwt,
                                                   @Valid @RequestBody AcquireStepupTokenRequest request) {
-        return walletTransferService.acquireStepupToken(sourceWalletId, transferId, request.pin());
+        return walletTransferService.acquireStepupToken(sourceWalletId, transferId,
+                "Bearer " + jwt.getTokenValue(), request.pin());
     }
 
     @PostMapping("/{transferId}/complete")
     public WalletTransferResponse complete(@PathVariable UUID sourceWalletId,
                                            @PathVariable UUID transferId,
+                                           @AuthenticationPrincipal Jwt jwt,
                                            @Valid @RequestBody CompleteWalletTransferRequest request) {
-        return walletTransferService.complete(sourceWalletId, transferId, request.stepupToken());
+        return walletTransferService.complete(sourceWalletId, transferId,
+                "Bearer " + jwt.getTokenValue(), request.stepupToken());
     }
 }

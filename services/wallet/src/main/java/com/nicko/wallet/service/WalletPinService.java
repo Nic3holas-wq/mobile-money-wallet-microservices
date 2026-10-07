@@ -20,8 +20,8 @@ public class WalletPinService {
     private final WalletRepository walletRepository;
     private final WalletPinCredentialService credentialService;
 
-    public void setOrChange(UUID walletPublicId, String newPin, String currentPin) {
-        CustomerDto customer = customerClient.getCurrentCustomer();
+    public void setOrChange(UUID walletPublicId, String authorization, String newPin, String currentPin) {
+        CustomerDto customer = customerClient.getCurrentCustomer(authorization);
         Wallet wallet = walletRepository.findByPublicId(walletPublicId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Wallet not found"));
         if (!customer.id().equals(wallet.getCustomerId())) {

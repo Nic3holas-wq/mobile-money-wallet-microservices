@@ -5,6 +5,8 @@ import com.nicko.wallet.service.WalletPinService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,8 +24,10 @@ public class WalletPinController {
 
     @PutMapping
     public ResponseEntity<Void> setOrChangePin(@PathVariable UUID walletId,
+                                               @AuthenticationPrincipal Jwt jwt,
                                                @Valid @RequestBody SetWalletPinRequest request) {
-        walletPinService.setOrChange(walletId, request.newPin(), request.currentPin());
+        walletPinService.setOrChange(walletId, "Bearer " + jwt.getTokenValue(),
+                request.newPin(), request.currentPin());
         return ResponseEntity.noContent().build();
     }
 }

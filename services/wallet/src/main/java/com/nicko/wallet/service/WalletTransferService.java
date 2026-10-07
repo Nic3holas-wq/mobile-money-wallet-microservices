@@ -48,8 +48,9 @@ public class WalletTransferService {
     private Duration transferTtl;
 
     @Transactional
-    public WalletTransferResponse transfer(UUID sourceWalletPublicId, WalletTransferRequest request) {
-        CustomerDto customer = customerClient.getCurrentCustomer();
+    public WalletTransferResponse transfer(UUID sourceWalletPublicId, String authorization,
+                                           WalletTransferRequest request) {
+        CustomerDto customer = customerClient.getCurrentCustomer(authorization);
         requireEligible(customer);
         if (sourceWalletPublicId.equals(request.destinationWalletId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Source and destination wallets must differ");
@@ -105,8 +106,9 @@ public class WalletTransferService {
     }
 
     @Transactional
-    public StepupTokenResponse acquireStepupToken(UUID sourceWalletPublicId, UUID transferId, String pin) {
-        CustomerDto customer = currentEligibleCustomer();
+    public StepupTokenResponse acquireStepupToken(UUID sourceWalletPublicId, UUID transferId,
+                                                  String authorization, String pin) {
+        CustomerDto customer = currentEligibleCustomer(authorization);
         WalletTransfer transfer = transferRepository.findByIdForUpdate(transferId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transfer not found"));
         if (!sourceWalletPublicId.equals(transfer.getSourceWallet().getPublicId())
@@ -140,8 +142,9 @@ public class WalletTransferService {
     }
 
     @Transactional
-    public WalletTransferResponse complete(UUID sourceWalletPublicId, UUID transferId, String rawToken) {
-        CustomerDto customer = currentEligibleCustomer();
+    public WalletTransferResponse complete(UUID sourceWalletPublicId, UUID transferId,
+                                           String authorization, String rawToken) {
+        CustomerDto customer = currentEligibleCustomer(authorization);
         WalletTransfer observed = transferRepository.findById(transferId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transfer not found"));
         if (!sourceWalletPublicId.equals(observed.getSourceWallet().getPublicId())
@@ -215,8 +218,8 @@ public class WalletTransferService {
         }
     }
 
-    private CustomerDto currentEligibleCustomer() {
-        CustomerDto customer = customerClient.getCurrentCustomer();
+    private CustomerDto currentEligibleCustomer(String authorization) {
+        CustomerDto customer = customerClient.getCurrentCustomer(authorization);
         requireEligible(customer);
         return customer;
     }
