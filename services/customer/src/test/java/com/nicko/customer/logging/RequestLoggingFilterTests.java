@@ -28,7 +28,7 @@ class RequestLoggingFilterTests {
             var request = new MockHttpServletRequest("GET", "/private-customer-id");
             request.setQueryString("token=private-token");
             request.addHeader("Authorization", "Bearer private-token");
-            request.addHeader("X-Request-ID", "untrusted-id");
+            request.addHeader("X-Request-ID", "untrusted/id");
             var response = new MockHttpServletResponse();
             new RequestLoggingFilter().doFilter(request, response, (req, res) -> {
                 req.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "/api/v1/customers/me/contacts/{id}");
@@ -41,7 +41,7 @@ class RequestLoggingFilterTests {
             assertThat(events.list).singleElement().satisfies(event -> {
                 assertThat(event.getMDCPropertyMap().get("requestId")).isEqualTo(id);
                 assertThat(event.getFormattedMessage()).contains("status=404", "contacts/{id}")
-                        .doesNotContain("private-customer-id", "private-token", "untrusted-id");
+                        .doesNotContain("private-customer-id", "private-token", "untrusted/id");
             });
         } finally { MDC.remove("requestId"); logger.detachAppender(events); events.stop(); }
     }
