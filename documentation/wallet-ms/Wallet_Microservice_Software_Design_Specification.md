@@ -9,7 +9,7 @@
 | :--- | :--- |
 | **Project / Service Name** | Mobile Money Core Platform / `wallet-service` |
 | **Document Version** | 1.0.0-PROD |
-| **Author** | Senior Software Engineer (Amazon / Distributed Core Ledger) |
+| **Author** | Nicholas Murimi(Software Engineer) |
 | **Date** | October 2026 |
 | **Status** | Approved / Baseline Architecture Design |
 | **Classification** | Restricted — Confidential (Core Financial Ledger) |

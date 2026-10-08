@@ -9,7 +9,7 @@
 | :--- | :--- |
 | **Document Version** | 1.0.0-PROD |
 | **Status** | Approved / Baseline Architecture |
-| **Author** | Senior Software Engineer (Amazon / FinTech Core Ledger) |
+| **Author** | Nicholas Murimi(Software Engineer) |
 | **Reviewed By** | Principal Systems Architect, Staff Security Engineer, Head of Payments Engineering |
 | **Target Service** | `wallet-service` (Mobile Money Core Ecosystem) |
 | **Classification** | Restricted — Confidential (Core Financial Ledger) |
