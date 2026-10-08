@@ -176,7 +176,6 @@ services:
       PGDATA: /data/postgres
     volumes:
       - postgres:/data/postgres
-      - ./postgres-init:/docker-entrypoint-initdb.d:ro,Z
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U nicko -d postgres" ]
       interval: 5s
@@ -192,16 +191,9 @@ services:
     image: postgres:16
     environment:
       PGPASSWORD: nicko
-    entrypoint: ["/bin/sh", "-c"]
-    command: >-
-      set -eu;
-      until pg_isready -h postgresql -U nicko -d postgres; do sleep 2; done;
-      for database in customer_db wallet_db payment_db; do
-        if ! psql -h postgresql -U nicko -d postgres -tAc
-        "SELECT 1 FROM pg_database WHERE datname = '$$database'" | grep -q 1; then
-          createdb -h postgresql -U nicko "$$database";
-        fi;
-      done
+    entrypoint: ["/bin/sh", "/bootstrap/ensure-databases.sh"]
+    volumes:
+      - ./postgres-init:/bootstrap:ro,Z
     depends_on:
       postgresql:
         condition: service_healthy
