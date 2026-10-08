@@ -74,7 +74,8 @@ public class SecurityConfiguration {
                                 "/webjars/swagger-ui/**",
                                 "/webjars/**",
                                 "/customer-service/v3/api-docs/**",
-                                "/wallet-service/v3/api-docs/**"
+                                "/wallet-service/v3/api-docs/**",
+                                "/payment-service/v3/api-docs/**"
                         ).permitAll()
                         .pathMatchers("/api/v1/admin/**").hasRole(adminRole)
                         .anyExchange().authenticated()

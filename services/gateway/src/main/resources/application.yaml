@@ -64,6 +64,37 @@ spring:
               filters:
                 - StripPrefix=1
 
+            # Payment docs route
+            - id: payment-service-docs
+              uri: http://payment-service:8083
+              predicates:
+                - Path=/payment-service/v3/api-docs/**
+              metadata:
+                connect-timeout: 2000
+                response-timeout: 5000
+              filters:
+                - StripPrefix=1
+
+            # Payment initiation and status operations
+            - id: payment-service
+              uri: http://payment-service:8083
+              predicates:
+                - Path=/api/v1/payments/**,/api/v1/admin/payments/**,/internal/v1/payments/**
+              metadata:
+                response-timeout: 15000
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    redis-rate-limiter.replenishRate: 1
+                    redis-rate-limiter.burstCapacity: 5
+                    redis-rate-limiter.requestedTokens: 1
+                - name: CircuitBreaker
+                  args:
+                    name: payment-service
+                    fallbackUri: forward:/fallback/payment-service
+                    statusCodes: 502,503,504
+
             # Business API route
             - id: customer-service
               uri: http://customer-service:8081
@@ -138,7 +169,7 @@ app:
     admin-role: ${CUSTOMER_ADMIN_ROLE:customer-admin}
     issuer-uri: ${GATEWAY_ISSUER_URI:http://localhost:9091/realms/mobile-money-wallet}
     jwk-set-uri: ${GATEWAY_JWK_SET_URI:http://keycloak:8080/realms/mobile-money-wallet/protocol/openid-connect/certs}
-    allowed-audiences: ${GATEWAY_ALLOWED_AUDIENCES:customer-service, wallet-service}
+    allowed-audiences: ${GATEWAY_ALLOWED_AUDIENCES:customer-service, wallet-service, payment-service}
 
 springdoc:
   swagger-ui:
@@ -147,6 +178,8 @@ springdoc:
         url: /customer-service/v3/api-docs
       - name: wallet-service
         url: /wallet-service/v3/api-docs
+      - name: payment-service
+        url: /payment-service/v3/api-docs
 
 management:
   endpoints:

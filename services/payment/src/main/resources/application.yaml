@@ -55,3 +55,6 @@ management:
       probes:
         enabled: true
 
+clients:
+  wallet:
+    url: ${CLIENTS_WALLET_URL:http://localhost:8082}
