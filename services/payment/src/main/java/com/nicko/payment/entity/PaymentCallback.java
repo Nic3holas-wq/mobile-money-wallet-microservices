@@ -76,4 +76,11 @@ public class PaymentCallback {
 
     @Column(name = "error_message", columnDefinition = "text")
     private String errorMessage;
+
+    @NotNull
+    @Column(name = "retry_count", nullable = false)
+    private Integer retryCount = 0;
+
+    @Column(name = "next_retry_at")
+    private Instant nextRetryAt;
 }

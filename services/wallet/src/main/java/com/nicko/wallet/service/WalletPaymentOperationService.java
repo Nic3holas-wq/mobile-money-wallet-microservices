@@ -2,6 +2,7 @@ package com.nicko.wallet.service;
 
 import com.nicko.wallet.dto.PaymentOperationRequest;
 import com.nicko.wallet.dto.PaymentOperationResponse;
+import com.nicko.wallet.dto.PaymentWalletAccountResponse;
 import com.nicko.wallet.entity.Wallet;
 import com.nicko.wallet.entity.WalletLedgerEntry;
 import com.nicko.wallet.entity.WalletPaymentOperation;
@@ -104,6 +105,16 @@ public class WalletPaymentOperationService {
         ledgerEntryRepository.save(createLedgerEntry(wallet, operation, LedgerEntryType.DEPOSIT,
                 LedgerDirection.CREDIT, before, wallet.getBalance()));
         return response(wallet, operation);
+    }
+
+    @Transactional(readOnly = true)
+    public PaymentWalletAccountResponse getPaymentAccount(UUID customerId) {
+        Wallet wallet = walletRepository.findByCustomerId(customerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Wallet not found"));
+        if (wallet.getStatus() != WalletStatus.ACTIVE) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Wallet is not active");
+        }
+        return new PaymentWalletAccountResponse(wallet.getPublicId(), wallet.getCustomerId(), wallet.getCurrency());
     }
 
     private Wallet findActiveWalletForUpdate(UUID publicId) {

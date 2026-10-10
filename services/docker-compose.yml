@@ -119,10 +119,23 @@ services:
       KEYCLOAK_ISSUER_URI: https://localhost:8443/realms/mobile-money-wallet
       KEYCLOAK_JWK_SET_URI: http://keycloak:8080/realms/mobile-money-wallet/protocol/openid-connect/certs
       PAYMENT_JWT_AUDIENCE: payment-service
+      KEYCLOAK_BASE_URL: http://keycloak:8080
+      KEYCLOAK_REALM: mobile-money-wallet
+      PAYMENT_WALLET_CLIENT_ID: ${PAYMENT_WALLET_CLIENT_ID:-payment-service}
+      PAYMENT_WALLET_CLIENT_SECRET: ${PAYMENT_WALLET_CLIENT_SECRET:-}
       CLIENTS_WALLET_URL: http://wallet-service:8082
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       KAFKA_CONSUMER_GROUP: payment-service
       KAFKA_ENABLED: "true"
+      MPESA_BASE_URL: ${MPESA_BASE_URL:-https://sandbox.safaricom.co.ke}
+      MPESA_CONSUMER_KEY: ${MPESA_CONSUMER_KEY:-}
+      MPESA_CONSUMER_SECRET: ${MPESA_CONSUMER_SECRET:-}
+      MPESA_BUSINESS_SHORT_CODE: ${MPESA_BUSINESS_SHORT_CODE:-}
+      MPESA_PASSKEY: ${MPESA_PASSKEY:-}
+      MPESA_TRANSACTION_TYPE: ${MPESA_TRANSACTION_TYPE:-CustomerPayBillOnline}
+      MPESA_PUBLIC_BASE_URL: ${MPESA_PUBLIC_BASE_URL:-}
+      MPESA_CALLBACK_TOKEN: ${MPESA_CALLBACK_TOKEN:-}
+      PAYMENT_EVENTS_TOPIC: ${PAYMENT_EVENTS_TOPIC:-payment.events.v1}
     depends_on:
       database-bootstrap:
         condition: service_completed_successfully

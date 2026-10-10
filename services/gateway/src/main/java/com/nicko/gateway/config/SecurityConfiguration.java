@@ -67,6 +67,7 @@ public class SecurityConfiguration {
                         .pathMatchers("/actuator/health/**").permitAll()
                         .pathMatchers("/actuator/info").permitAll()
                         .pathMatchers("/api/v1/auth/register").permitAll()
+                        .pathMatchers("/api/v1/payments/callbacks/provider").permitAll()
                         .pathMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",

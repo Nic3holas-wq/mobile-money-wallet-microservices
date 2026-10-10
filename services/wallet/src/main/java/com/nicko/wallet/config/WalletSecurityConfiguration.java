@@ -20,7 +20,7 @@ public class WalletSecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info").permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/internal/v1/wallets/**").hasAuthority("PAYMENT_SERVICE")
+                        .requestMatchers("/internal/v1/wallets/**", "/internal/v1/payment-accounts/**").hasAuthority("PAYMENT_SERVICE")
                         .requestMatchers("/api/v1/admin/**").hasAuthority("WALLET_ADMIN")
                         .requestMatchers("/api/v1/wallets/**").authenticated()
                         .anyRequest().denyAll())
